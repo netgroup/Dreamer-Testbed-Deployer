@@ -41,6 +41,7 @@ class MappingParserOFELIA:
 		if 'vlan' not in self.json_data:
 			print "*** Error No vlan Data"
 			sys.exit(-2)
+		self.vlan = self.json_data['vlan']
 		if 'core' in self.json_data:
 			oshies = self.json_data['core']
 			for oshi in oshies:
@@ -73,8 +74,3 @@ class NODInfo:
 		self.mgt_ip = mgt_ip
 		self.intfs = intfs
 
-"""
-if __name__ == '__main__':
-	mparser = MappingParser("ofelia_mapping.json", False)
-	mparser.getNodesInfo()
-"""

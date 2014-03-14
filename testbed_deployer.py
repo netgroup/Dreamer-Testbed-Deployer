@@ -189,6 +189,5 @@ def buildTopoFromFile(param):
 	return net
 
 if __name__ == '__main__':
-	unmountAll()
 	testbed = buildTestbedFromFile(param)
 
