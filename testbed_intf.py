@@ -27,17 +27,23 @@ class EthIntf(Intf):
 	def serialize(self):
 		return "declare -a %s=(%s %s.%s.%s.%s)\n" % (self.name, self.ip, self.netmask[0], self.netmask[1], self.netmask[2], self.netmask[3])
 
+	def __str__(self):
+		return "{'name':'%s', 'ip':'%s/%s', 'netmask':'%s.%s.%s.%s'}" %(self.name, self.ip, self. netbit, self.netmask[0], self.netmask[1], self.netmask[2], self.netmask[3])
+
 class TapIntf(Intf):
 	
 	def __init__(self, name, localport, remoteport, endipname):
 		Intf.__init__(self,name)
-		self.ip = ip
+		self.name = name
 		self.localport = localport
 		self.remoteport = remoteport
 		self.endipname = endipname
 	
 	def serialize(self):
-		return "declare -a %s=(%s %s %s)\n" % (self.localport, self.remoteport, self.endipname)
+		return "declare -a %s=(%s %s %s)\n" % (self.name, self.localport, self.remoteport, self.endipname)
+	
+	def __str__(self):
+		return "{'name':'%s', 'localport':'%s', 'remoteport':'%s', 'endip':'%s'}" % (self.name, self.localport, self.remoteport, self.endipname)
 
 class ViIntf(Intf):
 	
@@ -51,6 +57,9 @@ class ViIntf(Intf):
 	def serialize(self):
 		return "declare -a %s=(%s/%s %s %s)\n" %(self.name, self.ip, self.netbit, self.hello_int, self.cost)
 
+	def __str__(self):
+		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.hello_int, self.cost)
+
 class LoIntf(Intf):
 	
 	def __init__(self, ip, name="LOOPBACK", netbit=32, hello_int=1, cost=1):
@@ -63,6 +72,8 @@ class LoIntf(Intf):
 	def serialize(self):
 		return "declare -a %s=(%s/%s %s %s)\n" %(self.name, self.ip, self.netbit, self.hello_int, self.cost)
 
+	def __str__(self):
+		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.hello_int, self.cost)
 
 
 

@@ -1,0 +1,52 @@
+#!/bin/bash
+############################################################
+##            DREAMER IP/SDN Hyibrid node param           ##
+##                                                        ##
+##   Parameters to be set by the user for config process  ##
+##                                                        ##
+############################################################
+# HowTO
+#
+# PLEASE, DO NOT USE WHITE SPACES
+#
+# HOST - machine and router hostname - i.e. oshi
+#
+# ROUTERPWD - Machine password and quagga router password - i.e. dreamer
+#
+# SLICEVLAN - OFELIA slice VLAN - i.e. 200
+#
+# BRIDGENAME - OVS bridge name - i.e. br-dreamer
+#
+# CTRL - Parameters to reach the OpenFlow controller
+# First parameter -> OpenFlow controller IP address
+# Second parameter -> OpenFlow controller TCP port
+# i.e. CTRL=(192.168.0.100 6633)
+#
+# LOOPBACK - Loopback interface address and subnet, ospf cost, ospf helo interval - i.e. LOOPBACK=(192.168.100.1/32 15 2)
+#
+# INTERFACES - List of physical interface to be used by the oshi node - Do not specify eth0 (the mngmt interface)
+# i.e. INTERFACES=(eth1 eth2 eth3 eth4)
+#
+# ethX - IP address and netmask to be assigned to each interface specified above into INTERFACES
+# i.e. eth1=(192.168.1.1/24)
+#
+# TAP - List of tap interfaces used to create point-to-point tunnels between end-hosts
+# i.e. TAP=(tap1 tap2 tap3 tap4)
+#
+# tapX - tap interface details. Local tap port, remote tap port, name of variable indicating the ip address to reach and the interface to use (see endipX below)
+# i.e. tapX=(1191 1194 endip1)
+#
+# endipX - express the ip address to connect to with a specific tap interface and the local ethernet interface to use to make the connection
+# i.e. endipX=(192.168.0.1 eth1)
+#
+# Quagga interfaces - Define quagga virtual interfaces, used for the connection with OVS. They must be the same number of tap interfaces.
+# i.e. QUAGGAINT=(vi1 vi2 vi3 vi4)
+#
+# viX - For each interface specify ip address/netmask, ospf cost and the helo interval
+# i.e. vi1=(10.0.0.1/24 15 2)
+#
+# OSPFNET - List of OSPF networks to be announced (specified below) - i.e. OSPFNET=(NET1 NET2 NET3 NET4)
+#
+# NETX - Details of networks (named and listed above) to be anounced. Specify the network to be announced, the netmask and the OSPF area
+# i.e. declare -a net1 - net1=(192.168.0.0/24 0.0.0.0)
+#

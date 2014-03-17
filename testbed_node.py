@@ -10,25 +10,72 @@ author: Giuseppe Siracusano (a_siracusano@tin.it)
 author: Stefano Salsano (stefano.salsano@uniroma2.it)
 
 """
-
-from testbed_intf import EthIntf
+import re
+from abc import ABCMeta, abstractmethod
+from testbed_intf import EthIntf, LoIntf, TapIntf, ViIntf
+from testbed_deployer_utils import EndIP
+from testbed_deployer_utils import OSPFNetwork
 
 #TODO Integration with psShell
 # TODO Integrity Check, before starting the creation of the testbed.sh
-class Oshi:
 
-	loopbackBaseTestbed = [172, 168, 0, 0]
-	ipBaseTestbed=[192,168, 0, 0]
+class Node:
+	
+	ipBaseTestbed=[192,168, 1, 0]
 	netbitTestbed=16
 	netmaskTestbed=[255, 255, 0, 0]
-
-	def __init__( self, NODInfo, vlan):
+	
+	def __init__( self, NODInfo):
 		self.name = NODInfo.name
-		self.dpid = self.defaultDpid()
 		self.mgt_ip = NODInfo.mgt_ip
-		self.loopback = LoIntf(ip=self.next_loopbackAddress())
 		self.eths = []
 		self.nameToEths = {}
+		for eth in NODInfo.intfs:
+			eth_intf = EthIntf(eth, self.next_testbedAddress(), self.netbitTestbed, self.netmaskTestbed)
+			self.eths.append(eth_intf)
+			self.nameToEths[eth] = eth_intf
+
+	def next_testbedAddress(self):
+		self.ipBaseTestbed[3] = (self.ipBaseTestbed[3] + 1) % 256
+		if self.ipBaseTestbed[3] == 0:
+			self.ipBaseTestbed[2] = (self.ipBaseTestbed[2] + 1) % 256
+		if self.ipBaseTestbed[2] == 255 and self.ipBaseTestbed[3] == 255:
+			print "Ip Testbed Address Sold Out"
+			sys.exit(-2)
+		return "%s.%s.%s.%s" %(self.ipBaseTestbed[0], self.ipBaseTestbed[1], self.ipBaseTestbed[2], self.ipBaseTestbed[3])
+
+	def start(self):
+		raise NotImplementedError("TODO")
+
+	def stop(self):
+		raise NotImplementedError("TODO")
+
+	def configure(self):
+		raise NotImplementedError("TODO")
+	
+	def cmd(self, cmds):		
+		raise NotImplementedError("TODO")
+
+class Controller(Node):
+
+	def __init__( self, NODInfo, port, vlan):
+		Node.__init__(self, NODInfo)
+		self.port = port
+		self.ips = []
+
+	def addIP(self, ip):
+		if ip not in ips:
+			self.ips.append(ip) 
+
+class Oshi(Node):
+
+	loopbackBaseTestbed = [172, 168, 0, 0]
+	dpidLen = 16
+
+	def __init__( self, NODInfo, vlan):
+		Node.__init__(self, NODInfo)
+		self.dpid = self.defaultDpid()
+		self.loopback = LoIntf(ip=self.next_loopbackAddress())
 		self.vlan = vlan
 		self.endips = []
 		self.nameToEndIps = {}
@@ -37,17 +84,16 @@ class Oshi:
 		self.vis = []
 		self.nameToVis = {}
 		self.ctrls = []
+		self.ospfnets = []
+		self.nameToNets = {}
 		
 		self.endIPBase = 1
 		self.tapBase = 1
 		self.viBase = 1
 		self.ethIndex = 0
 		self.tapPortBase = 1190
+		self.ospfNetBase = 1
 
-		for eth in NODInfo.intfs:
-			eth_intf = EthIntf(eth, self.next_testbedAddress(), self.netbitTestbed, self.netmaskTestbed)
-			self.eths.append(eth_intf)
-			self.nameToEths[eth] = eth_intf
 
 	def defaultDpid( self ):
 		"Derive dpid from switch name, s1 -> 1"
@@ -68,15 +114,27 @@ class Oshi:
 			if key in self.ctrls:
 				continue
 			self.ctrls.append(key)
-
+	
+	def newOSPFNetName(self):
+		ret = self.ospfNetBase
+		self.ospfNetBase = self.ospfNetBase + 1
+		return "NET%s" % ret		
+		
+	def addOSPFNet(self, net):
+		name = self.newOSPFNetName()
+		net.name = name
+		self.ospfnets.append(net)
+		self.nameToNets[name] = net
+		return net
+	
 	def newViName(self):
 		ret = self.viBase
 		self.viBase = self.viBase + 1
-		return ret
+		return "vi%s" % ret
 	
 	def addVi(self, ip, netbit, hello_int, cost):
 		name = self.newViName()
-		vi = ViIntf(name, ip, netbit, hello_int. cost)
+		vi = ViIntf(name, ip, netbit, hello_int, cost)
 		self.vis.append(vi)
 		self.nameToVis[name] = vi
 		return vi 		
@@ -84,7 +142,7 @@ class Oshi:
 	def newTapName(self):
 		ret = self.tapBase
 		self.tapBase = self.tapBase + 1
-		return ret
+		return "tap%s" % ret
 	
 	def newTapPort(self):
 		self.tapPortBase = self.tapPortBase + 1
@@ -98,8 +156,8 @@ class Oshi:
 		return tap
  
 	def next_eth(self):
-		ret = (self.eths[eth_Index].name, self.eths[eth_Index].ip)
-		eth_Index = (eth_Index + 1) % len(self.eths) 		
+		ret = (self.eths[self.ethIndex].name, self.eths[self.ethIndex].ip)
+		self.ethIndex = (self.ethIndex + 1) % len(self.eths) 		
 		return ret
 
 	def addEndIP(self, remoteIP, localIntf):
@@ -112,16 +170,7 @@ class Oshi:
 	def newEndIPName(self):
 		ret = self.endIPBase
 		self.endIPBase = self.endIPBase + 1
-		return ret
-		
-	def next_testbedAddress(self):
-		self.ipBaseTestbed[3] = (self.ipBaseTestbed[3] + 1) % 256
-		if self.ipBaseTestbed[3] == 0:
-			self.ipBaseTestbed[2] = (self.ipBaseTestbed[2] + 1) % 256
-		if self.ipBaseTestbed[2] == 255 and self.ipBaseTestbed[3] == 255:
-			print "Ip Testbed Address Sold Out"
-			sys.exit(-2)
-		return "%s.%s.%s.%s" %(self.ipBaseTestbed[0], self.ipBaseTestbed[1], self.ipBaseTestbed[2], self.ipBaseTestbed[3])
+		return "endip%s" % ret
 
 	def next_loopbackAddress(self):
 		self.loopbackBaseTestbed[3] = (self.loopbackBaseTestbed[3] + 1) % 256
@@ -144,12 +193,21 @@ class Oshi:
 			i = i + 1			
 		ret = "declare -a CTRL=(" + " ".join(names) + ")\n" + serialized_line
 		return ret
-	
+
 	def ethsSerialization(self):
-		return "declare -a INTERFACES=(" + " ".join(self.eths) + ")\n"
+		return "declare -a INTERFACES=(" + " ".join("%s" % eth.name for eth in self.eths) + ")\n"
+
+	def tapsSerialization(self):
+		return "declare -a TAP=(" + " ".join("%s" % tap.name for tap in self.taps) + ")\n"
+	
+	def visSerialization(self):
+		return "declare -a QUAGGAINT=(" + " ".join("%s" % vi.name for vi in self.vis) + ")\n"
+
+	def ospfnetsSerialization(self):
+		return "declare -a OSPFNET=(" + " ".join("%s" % net.name for net in self.ospfnets) + ")\n"
 
 	def configure(self):
-		testbed = open('testbed.sh','wa')
+		testbed = open('testbed.sh','a')
 		testbed.write("# %s - start\n" % self.mgt_ip)
 		testbed.write("HOST=%s\n" % self.name)
 		testbed.write("ROUTERPWD=dreamer\n")
@@ -158,6 +216,20 @@ class Oshi:
 		testbed.write("BRIDGENAME=br-dreamer\n")
 		testbed.write(self.controllersSerialization())
 		testbed.write(self.loopback.serialize())
+		testbed.write(self.ethsSerialization())
+		for eth in self.eths:
+			testbed.write(eth.serialize())
+		testbed.write(self.tapsSerialization())
+		for tap in self.taps:
+			testbed.write(tap.serialize())
+		for endip in self.endips:
+			testbed.write(endip.serialize())
+		testbed.write(self.visSerialization())
+		for vi in self.vis:
+			testbed.write(vi.serialize())
+		testbed.write(self.ospfnetsSerialization())
+		for net in self.ospfnets:
+			testbed.write(net.serialize())
 		testbed.write("# %s - end\n" % self.mgt_ip)
 		testbed.close()
 
@@ -166,39 +238,7 @@ class Oshi:
 	#def stop():
 
 	#def cmd():
-	"""	
-		# 10.216.33.133 - start
-		HOST=oshi
-		ROUTERPWD=dreamer
-		SLICEVLAN=200
-		BRIDGENAME=br-dreamer
-		declare -a CTRL=(10.0.50.25 6633)
-		declare -a LOOPBACK=(10.0.100.1/32 15 2)
-		declare -a INTERFACES=(eth1 eth2 eth3 eth4)
-		declare -a eth1=(192.168.1.11 255.255.0.0)
-		declare -a eth2=(192.168.1.12 255.255.0.0)
-		declare -a eth3=(192.168.1.13 255.255.0.0)
-		declare -a eth4=(192.168.1.14 255.255.0.0)
-		declare -a TAP=(tap1 tap2 tap3 tap4)
-		declare -a tap1=(1191 1191 endip1)
-		declare -a tap2=(1192 1192 endip1)
-		declare -a tap3=(1193 1193 endip1)
-		declare -a tap4=(1194 1194 endip2)
-		declare -a endip1=(192.168.1.21 eth1)
-		declare -a endip2=(192.168.1.22 eth2)
-		declare -a QUAGGAINT=(vi1 vi2 vi3 vi4)
-		declare -a vi1=(10.0.1.1/24 15 2)
-		declare -a vi2=(10.0.2.1/24 15 2)
-		declare -a vi3=(10.0.3.1/24 15 2)
-		declare -a vi4=(10.0.4.1/24 15 2)
-		declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
-		declare -a NET1=(10.0.1.0/24 0.0.0.0)
-		declare -a NET2=(10.0.2.0/24 0.0.0.0)
-		declare -a NET3=(10.0.3.0/24 0.0.0.0)
-		declare -a NET4=(10.0.4.0/24 0.0.0.0)
-		declare -a NET5=(10.0.100.1/32 0.0.0.0)
-		# 10.216.33.133 - end
-	"""	
+	
 	
 
 

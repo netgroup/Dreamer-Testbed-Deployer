@@ -12,6 +12,7 @@ class MappingParserOFELIA:
 		self.oshis = []
 		self.aoshis = []
 		self.euhs = []
+		self.ctrls = []
 		self.vlan = None
 		if self.verbose:
 			print "*** MappingParser.__init__:"
@@ -33,7 +34,7 @@ class MappingParserOFELIA:
 	
 	def getNodesInfo(self):
 		self.parse_data()
-		return (self.oshis, self.aoshis, self.euhs)
+		return (self.oshis, self.aoshis, self.ctrls, self.euhs)
 	
 	def load_info(self):
 		if self.verbose:
@@ -50,8 +51,12 @@ class MappingParserOFELIA:
 			aoshies = self.json_data['access']
 			for aoshi in aoshies:
 				self.aoshis.append(NODInfo(aoshi[0], aoshi[1], aoshi[2]))
-		if 'euhs' in self.json_data:
-			euhos = self.json_data['euhs']
+		if 'ctrl' in self.json_data:
+			controllers = self.json_data['ctrl']
+			for controller in controllers:
+				self.ctrls.append(NODInfo(controller[0], controller[1], controller[2]))
+		if 'euh' in self.json_data:
+			euhos = self.json_data['euh']
 			for euh in euhos:
 				self.euhs.append(NODInfo(euh[0], euh[1], euh[2]))
 			
@@ -62,6 +67,9 @@ class MappingParserOFELIA:
 			print "*** AOSHI:"
 			for aos in self.aoshis:
 				print "*** Name %s - Mgt IP %s - Intfs %s" %(aos.name, aos.mgt_ip, aos.intfs)
+			print "*** CONTROLLER:"
+			for ctrl in self.ctrls:
+				print "*** Name %s - Mgt IP %s - Intfs %s" %(ctrl.name, ctrl.mgt_ip, ctrl.intfs)
 			print "*** EUH:"
 			for euh in self.euhs:
 				print "*** Name %s - Mgt IP %s - Intfs %s" %(euh.name, euh.mgt_ip, euh.intfs)

@@ -1,0 +1,3 @@
+# Dependecies For TopologyDeployer
+python-paramiko (apt)
+sshpass (apt)
