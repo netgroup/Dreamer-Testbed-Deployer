@@ -167,3 +167,9 @@ class TestbedTopoParser(TopoParser):
 		def __init__(self, path_json, verbose=False):
         		TopoParser.__init__(self, path_json, verbose=False)
 			self.subnetclass = TestbedSubnet
+
+		def getsubnets(self):
+			self.parse_data()
+			for l2subnet in self.l2subnets:
+				self.ppsubnets.append(l2subnet)
+			return (self.ppsubnets, [])

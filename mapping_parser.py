@@ -14,6 +14,8 @@ class MappingParserOFELIA:
 		self.euhs = []
 		self.ctrls = []
 		self.vlan = None
+		self.user = None
+		self.pwd = None
 		if self.verbose:
 			print "*** MappingParser.__init__:"
 		if os.path.exists(path_json) == False:
@@ -39,6 +41,14 @@ class MappingParserOFELIA:
 	def load_info(self):
 		if self.verbose:
 			print "*** Retrieve Nodes"
+		if 'username' not in self.json_data:
+			print "*** Error No Username Data"
+			sys.exit(-2)
+		self.user = self.json_data['username']
+		if 'password' not in self.json_data:
+			print "*** Error No Password Data"
+			sys.exit(-2)
+		self.pwd = self.json_data['password']
 		if 'vlan' not in self.json_data:
 			print "*** Error No vlan Data"
 			sys.exit(-2)
@@ -46,19 +56,19 @@ class MappingParserOFELIA:
 		if 'core' in self.json_data:
 			oshies = self.json_data['core']
 			for oshi in oshies:
-				self.oshis.append(NODInfo(oshi[0], oshi[1], oshi[2]))
+				self.oshis.append(NODInfo(oshi[0], oshi[1]))
 		if 'access' in self.json_data:
 			aoshies = self.json_data['access']
 			for aoshi in aoshies:
-				self.aoshis.append(NODInfo(aoshi[0], aoshi[1], aoshi[2]))
+				self.aoshis.append(NODInfo(aoshi[0], aoshi[1]))
 		if 'ctrl' in self.json_data:
 			controllers = self.json_data['ctrl']
 			for controller in controllers:
-				self.ctrls.append(NODInfo(controller[0], controller[1], controller[2]))
+				self.ctrls.append(NODInfo(controller[0], controller[1]))
 		if 'euh' in self.json_data:
 			euhos = self.json_data['euh']
 			for euh in euhos:
-				self.euhs.append(NODInfo(euh[0], euh[1], euh[2]))
+				self.euhs.append(NODInfo(euh[0], euh[1]))
 			
 		if self.verbose:		
 			print "*** OSHI:"
@@ -77,8 +87,8 @@ class MappingParserOFELIA:
 
 class NODInfo:
 	
-	def __init__(self, name, mgt_ip, intfs):
-		self.name = name
+	def __init__(self, mgt_ip, intfs):
 		self.mgt_ip = mgt_ip
 		self.intfs = intfs
+		self.name = None
 

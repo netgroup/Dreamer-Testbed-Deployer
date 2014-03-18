@@ -28,11 +28,8 @@ class OSPFNetwork:
 	ipBaseOSPF=[10, 0, 0, 0]
 	netbitOSPF=24
  
-	def __init__(self, name, ctrl, cost=1, hello_int=1, area="0.0.0.0"):
-		if ctrl:
-			self.subnet = [10, 0, 0, 0]
-		else :
-			self.subnet = self.next_netAddress()
+	def __init__(self, name, cost=1, hello_int=1, area="0.0.0.0"):
+		self.subnet = self.next_netAddress()
 		self.cost = cost
 		self.hello_int = hello_int
 		self.area = area

@@ -1,3 +1,7 @@
 # Dependecies For TopologyDeployer
 python-paramiko (apt)
 sshpass (apt)
+# If you want use networkx
+networkx
+pygraphviz
+matplotlib

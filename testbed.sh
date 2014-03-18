@@ -50,36 +50,14 @@
 # NETX - Details of networks (named and listed above) to be anounced. Specify the network to be announced, the netmask and the OSPF area
 # i.e. declare -a net1 - net1=(192.168.0.0/24 0.0.0.0)
 #
-# 10.216.33.175 - start
-HOST=osh1
-ROUTERPWD=dreamer
-DPID=0000000000000001
-SLICEVLAN=199
-BRIDGENAME=br-dreamer
-declare -a CTRL=()
-declare -a LOOPBACK=(172.168.0.1/32 1 1)
-declare -a INTERFACES=(eth1 eth2)
-declare -a eth1=(192.168.1.1 255.255.0.0)
-declare -a eth2=(192.168.1.2 255.255.0.0)
-declare -a TAP=(tap1 tap2)
-declare -a tap1=(1191 1191 endip1)
-declare -a tap2=(1192 1191 endip2)
-declare -a endip1=(192.168.1.3 eth1)
-declare -a endip2=(192.168.1.5 eth2)
-declare -a QUAGGAINT=(vi1 vi2)
-declare -a vi1=(10.0.1.1/24 1 1)
-declare -a vi2=(10.0.2.1/24 1 1)
-declare -a OSPFNET=(NET1 NET2)
-declare -a NET1=(10.0.1.0/24 0.0.0.0)
-declare -a NET2=(10.0.2.0/24 0.0.0.0)
-# 10.216.33.175 - end
 # 10.216.33.176 - start
 HOST=osh2
 ROUTERPWD=dreamer
 DPID=0000000000000002
 SLICEVLAN=199
 BRIDGENAME=br-dreamer
-declare -a CTRL=()
+declare -a CTRL=(CTRL1)
+declare -a CTRL1=(10.0.4.2 6633)
 declare -a LOOPBACK=(172.168.0.2/32 1 1)
 declare -a INTERFACES=(eth1 eth2)
 declare -a eth1=(192.168.1.3 255.255.0.0)
@@ -102,7 +80,8 @@ ROUTERPWD=dreamer
 DPID=0000000000000003
 SLICEVLAN=199
 BRIDGENAME=br-dreamer
-declare -a CTRL=()
+declare -a CTRL=(CTRL1)
+declare -a CTRL1=(10.0.4.2 6633)
 declare -a LOOPBACK=(172.168.0.3/32 1 1)
 declare -a INTERFACES=(eth1 eth2)
 declare -a eth1=(192.168.1.5 255.255.0.0)
@@ -119,3 +98,41 @@ declare -a OSPFNET=(NET1 NET2)
 declare -a NET1=(10.0.2.0/24 0.0.0.0)
 declare -a NET2=(10.0.3.0/24 0.0.0.0)
 # 10.216.33.177 - end
+# 10.216.33.175 - start
+HOST=osh1
+ROUTERPWD=dreamer
+DPID=0000000000000001
+SLICEVLAN=199
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1)
+declare -a CTRL1=(10.0.4.2 6633)
+declare -a LOOPBACK=(172.168.0.1/32 1 1)
+declare -a INTERFACES=(eth1 eth2)
+declare -a eth1=(192.168.1.1 255.255.0.0)
+declare -a eth2=(192.168.1.2 255.255.0.0)
+declare -a TAP=(tap1 tap2 tap3)
+declare -a tap1=(1191 1191 endip1)
+declare -a tap2=(1192 1191 endip2)
+declare -a tap3=(1193 1191 endip3)
+declare -a endip1=(192.168.1.3 eth1)
+declare -a endip2=(192.168.1.5 eth2)
+declare -a endip3=(192.168.1.7 eth1)
+declare -a QUAGGAINT=(vi1 vi2 vi3)
+declare -a vi1=(10.0.1.1/24 1 1)
+declare -a vi2=(10.0.2.1/24 1 1)
+declare -a vi3=(10.0.4.1/24 1 1)
+declare -a OSPFNET=(NET1 NET2 NET3)
+declare -a NET1=(10.0.1.0/24 0.0.0.0)
+declare -a NET2=(10.0.2.0/24 0.0.0.0)
+declare -a NET3=(10.0.4.0/24 0.0.0.0)
+# 10.216.33.175 - end
+# 10.216.33.178 - start
+HOST=ctrl1
+SLICEVLAN=199
+declare -a INTERFACES=(eth1 eth2)
+declare -a eth1=(192.168.1.7 255.255.0.0)
+declare -a eth2=(192.168.1.8 255.255.0.0)
+declare -a TAP=(tap1)
+declare -a tap1=(1191 1193 10.0.4.2 ENDIP1)
+declare -a ENDIP1=(192.168.1.1 eth1)
+# 10.216.33.178 - end
