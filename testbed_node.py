@@ -132,9 +132,10 @@ class Host(Node):
 		local_eth = param[1]
 		local_port = param[2]
 		remote_port =param[3]
+		net = param[4]
 		tap_ip = param[5]
 		endip = self.addEndIP(remote_ip, local_eth)
-		tap = self.addTapIP(local_port, remote_port, endip.name, tap_ip)
+		tap = self.addTapIP(local_port, remote_port, endip.name, tap_ip, net.netbitOSPF)
 		return (None, tap, None)
 
 	def addEndIP(self, remoteIP, localIntf):
@@ -158,9 +159,9 @@ class Host(Node):
 		self.tapPortBase = self.tapPortBase + 1
 		return self.tapPortBase
 	
-	def addTapIP(self, localport, remoteport, endipname, ip):
+	def addTapIP(self, localport, remoteport, endipname, ip, netbit):
 		name = self.newTapName()
-		tap = TapIPIntf(name, localport, remoteport, endipname, ip)
+		tap = TapIPIntf(name, localport, remoteport, endipname, ip, netbit)
 		self.taps.append(tap)
 		self.nameToTaps[name] = tap
 		return tap

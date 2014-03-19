@@ -44,15 +44,16 @@ class TapIntf(Intf):
 
 class TapIPIntf(TapIntf):
 	
-	def __init__(self, name, localport, remoteport, endipname, ip):
+	def __init__(self, name, localport, remoteport, endipname, ip, netbit):
 		TapIntf.__init__(self,name, localport, remoteport, endipname)
 		self.ip = ip
+		self.netbit = netbit
 
 	def serialize(self):
-		return "declare -a %s=(%s %s %s %s)\n" % (self.name, self.localport, self.remoteport, self.ip, self.endipname)
+		return "declare -a %s=(%s %s %s/%s %s)\n" % (self.name, self.localport, self.remoteport, self.ip, self.netbit, self.endipname)
 	
 	def __str__(self):
-		return "{'name':'%s', 'localport':'%s', 'remoteport':'%s', 'ip:':'%s', 'endip':'%s'}" % (self.name, self.localport, self.remoteport, self.ip, self.endipname)
+		return "{'name':'%s', 'localport':'%s', 'remoteport':'%s', 'ip:':'%s/%s', 'endip':'%s'}" % (self.name, self.localport, self.remoteport, self.ip, self.netbit, self.endipname)
 
 class ViIntf(Intf):
 	

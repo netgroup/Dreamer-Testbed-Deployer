@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+
 """
 
 author: Pier Luigi Ventre (pl.ventre@gmail.com)
@@ -217,10 +218,14 @@ def test1():
 	oshis = []
 	for i in range(3):
 		oshi = testbed.addOshi("osh%s" % (i+1))
-		for lhs in oshis:
-			l = testbed.addPPLink(lhs.name, oshi.name)
-			print "*** Connect", lhs.name, "To", oshi.name 
+		
 		oshis.append(oshi)
+	i = 0
+
+	for i in range(0, len(oshis)-1):
+		for j in range(i + 1, len(oshis)):
+			l = testbed.addPPLink(oshis[i].name, oshis[j].name)
+			print "*** Connect", oshis[i].name, "To", oshis[j].name 
 	
 	print "*** Create Controllers"
 	ctrl = testbed.addController('ctrl1', 6633)

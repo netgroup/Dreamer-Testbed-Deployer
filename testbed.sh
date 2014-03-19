@@ -133,6 +133,6 @@ declare -a INTERFACES=(eth1 eth2)
 declare -a eth1=(192.168.1.7 255.255.0.0)
 declare -a eth2=(192.168.1.8 255.255.0.0)
 declare -a TAP=(tap1)
-declare -a tap1=(1191 1193 10.0.4.2 ENDIP1)
+declare -a tap1=(1191 1193 10.0.4.2/24 ENDIP1)
 declare -a ENDIP1=(192.168.1.1 eth1)
 # 10.216.33.178 - end
