@@ -210,7 +210,7 @@ class TestbedOFELIA( Testbed ):
 		for osh in self.oshs:
 			osh.stop()
 
-# XXX Test1 Create a Mesh Triangular Network, with 3 OSHI and 3 Controllers And Print The Internal Object of TestBed
+# XXX Test1 Create a Mesh Triangular Network, with 3 OSHI and 1 Controllers And Print The Internal Object of TestBed
 def test1():
 	print "*** Test1"
 	testbed = TestbedOFELIA("ofelia_mapping.json", verbose=False)
@@ -550,8 +550,8 @@ def test3():
 """
 
 if __name__ == '__main__':
-	test1()
-	#test2()
+	#test1()
+	test2()
 	#test3()
 	
 
