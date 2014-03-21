@@ -49,10 +49,7 @@
 #
 # NETX - Details of networks (named and listed above) to be anounced. Specify the network to be announced, the netmask and the OSPF area
 # i.e. declare -a net1 - net1=(192.168.0.0/24 0.0.0.0)
-################################################################ ISTRUCTIONS END ###############################################################
-# general configuration - start
-MGMTNET=10.216.0.0
-# general configuration - end
+#
 # 10.216.33.176 - start
 HOST=osh2
 ROUTERPWD=dreamer
@@ -81,13 +78,12 @@ declare -a vi2=(10.0.3.2/24 1 1)
 declare -a vi3=(10.0.4.1/24 1 1)
 declare -a vi4=(10.0.5.2/24 1 1)
 declare -a vi5=(10.0.7.2/24 1 1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5 NET6)
-declare -a NET1=(172.168.0.2/32 0.0.0.0)
-declare -a NET2=(10.0.0.0/24 0.0.0.0)
-declare -a NET3=(10.0.3.0/24 0.0.0.0)
-declare -a NET4=(10.0.4.0/24 0.0.0.0)
-declare -a NET5=(10.0.5.0/24 0.0.0.0)
-declare -a NET6=(10.0.7.0/24 0.0.0.0)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
+declare -a NET1=(10.0.0.0/24 0.0.0.0)
+declare -a NET2=(10.0.3.0/24 0.0.0.0)
+declare -a NET3=(10.0.4.0/24 0.0.0.0)
+declare -a NET4=(10.0.5.0/24 0.0.0.0)
+declare -a NET5=(10.0.7.0/24 0.0.0.0)
 # 10.216.33.176 - end
 # 10.216.33.175 - start
 HOST=osh1
@@ -114,12 +110,11 @@ declare -a vi1=(10.0.1.2/24 1 1)
 declare -a vi2=(10.0.2.1/24 1 1)
 declare -a vi3=(10.0.3.1/24 1 1)
 declare -a vi4=(10.0.6.2/24 1 1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
-declare -a NET1=(172.168.0.1/32 0.0.0.0)
-declare -a NET2=(10.0.1.0/24 0.0.0.0)
-declare -a NET3=(10.0.2.0/24 0.0.0.0)
-declare -a NET4=(10.0.3.0/24 0.0.0.0)
-declare -a NET5=(10.0.6.0/24 0.0.0.0)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4)
+declare -a NET1=(10.0.1.0/24 0.0.0.0)
+declare -a NET2=(10.0.2.0/24 0.0.0.0)
+declare -a NET3=(10.0.3.0/24 0.0.0.0)
+declare -a NET4=(10.0.6.0/24 0.0.0.0)
 # 10.216.33.175 - end
 # 10.216.33.180 - start
 HOST=euh2
@@ -128,7 +123,6 @@ declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.8 255.255.0.0)
 declare -a TAP=(tap1)
 declare -a tap1=(1191 1193 10.0.9.2/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.9.1 tap1)
 declare -a ENDIP1=(192.168.1.4 eth1)
 # 10.216.33.180 - end
 # 10.216.33.181 - start
@@ -138,7 +132,6 @@ declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.9 255.255.0.0)
 declare -a TAP=(tap1)
 declare -a tap1=(1191 1193 10.0.8.1/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.8.2 tap1)
 declare -a ENDIP1=(192.168.1.3 eth1)
 # 10.216.33.181 - end
 # 10.216.33.179 - start
@@ -148,7 +141,6 @@ declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.7 255.255.0.0)
 declare -a TAP=(tap1)
 declare -a tap1=(1191 1193 10.0.10.2/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.10.1 tap1)
 declare -a ENDIP1=(192.168.1.5 eth1)
 # 10.216.33.179 - end
 # 10.216.33.145 - start
@@ -173,11 +165,10 @@ declare -a QUAGGAINT=(vi1 vi2 vi3)
 declare -a vi1=(10.0.1.1/24 1 1)
 declare -a vi2=(10.0.4.2/24 1 1)
 declare -a vi3=(10.0.8.2/24 1 1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4)
-declare -a NET1=(172.168.0.3/32 0.0.0.0)
-declare -a NET2=(10.0.1.0/24 0.0.0.0)
-declare -a NET3=(10.0.4.0/24 0.0.0.0)
-declare -a NET4=(10.0.8.0/24 0.0.0.0)
+declare -a OSPFNET=(NET1 NET2 NET3)
+declare -a NET1=(10.0.1.0/24 0.0.0.0)
+declare -a NET2=(10.0.4.0/24 0.0.0.0)
+declare -a NET3=(10.0.8.0/24 0.0.0.0)
 # 10.216.33.145 - end
 # 10.216.33.182 - start
 HOST=aos5
@@ -201,11 +192,10 @@ declare -a QUAGGAINT=(vi1 vi2 vi3)
 declare -a vi1=(10.0.6.1/24 1 1)
 declare -a vi2=(10.0.7.1/24 1 1)
 declare -a vi3=(10.0.10.1/24 1 1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4)
-declare -a NET1=(172.168.0.5/32 0.0.0.0)
-declare -a NET2=(10.0.6.0/24 0.0.0.0)
-declare -a NET3=(10.0.7.0/24 0.0.0.0)
-declare -a NET4=(10.0.10.0/24 0.0.0.0)
+declare -a OSPFNET=(NET1 NET2 NET3)
+declare -a NET1=(10.0.6.0/24 0.0.0.0)
+declare -a NET2=(10.0.7.0/24 0.0.0.0)
+declare -a NET3=(10.0.10.0/24 0.0.0.0)
 # 10.216.33.182 - end
 # 10.216.33.147 - start
 HOST=aos4
@@ -229,11 +219,10 @@ declare -a QUAGGAINT=(vi1 vi2 vi3)
 declare -a vi1=(10.0.2.2/24 1 1)
 declare -a vi2=(10.0.5.1/24 1 1)
 declare -a vi3=(10.0.9.1/24 1 1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4)
-declare -a NET1=(172.168.0.4/32 0.0.0.0)
-declare -a NET2=(10.0.2.0/24 0.0.0.0)
-declare -a NET3=(10.0.5.0/24 0.0.0.0)
-declare -a NET4=(10.0.9.0/24 0.0.0.0)
+declare -a OSPFNET=(NET1 NET2 NET3)
+declare -a NET1=(10.0.2.0/24 0.0.0.0)
+declare -a NET2=(10.0.5.0/24 0.0.0.0)
+declare -a NET3=(10.0.9.0/24 0.0.0.0)
 # 10.216.33.147 - end
 # 10.216.33.178 - start
 HOST=ctrl1
@@ -242,6 +231,5 @@ declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.6 255.255.0.0)
 declare -a TAP=(tap1)
 declare -a tap1=(1191 1191 10.0.0.2/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.0.1 tap1)
 declare -a ENDIP1=(192.168.1.2 eth1)
 # 10.216.33.178 - end

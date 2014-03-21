@@ -65,10 +65,10 @@ class ViIntf(Intf):
 		self.cost = cost
 	
 	def serialize(self):
-		return "declare -a %s=(%s/%s %s %s)\n" %(self.name, self.ip, self.netbit, self.hello_int, self.cost)
+		return "declare -a %s=(%s/%s %s %s)\n" %(self.name, self.ip, self.netbit, self.cost, self.hello_int)
 
 	def __str__(self):
-		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.hello_int, self.cost)
+		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.cost, self.hello_int)
 
 class LoIntf(Intf):
 	
@@ -80,10 +80,10 @@ class LoIntf(Intf):
 		self.cost = cost
 	
 	def serialize(self):
-		return "declare -a %s=(%s/%s %s %s)\n" %(self.name, self.ip, self.netbit, self.hello_int, self.cost)
+		return "declare -a %s=(%s/%s %s %s)\n" %(self.name, self.ip, self.netbit, self.cost, self.hello_int)
 
 	def __str__(self):
-		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.hello_int, self.cost)
+		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.cost, self.hello_int)
 
 
 

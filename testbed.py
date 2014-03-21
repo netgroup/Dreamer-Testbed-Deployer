@@ -12,7 +12,7 @@ author: Stefano Salsano (stefano.salsano@uniroma2.it)
 import sys
 from testbed_node import Oshi, Controller, Host
 from mapping_parser import MappingParserOFELIA
-from testbed_deployer_utils import OSPFNetwork
+from testbed_deployer_utils import OSPFNetwork, IPNetAllocator
 from testbed_cli import TestbedCLI
 from topo_parser import TestbedTopoParser
 import copy
@@ -36,6 +36,7 @@ class TestbedOFELIA( Testbed ):
 		self.vlan = self.parser.vlan
 		self.verbose = True
 		self.ospfBase = 1
+		self.ipNetAllocator = IPNetAllocator(self.parser.mgmtnet, self.parser.ipnet)
 
 		self.user = self.parser.user
 		self.pwd = self.parser.pwd
@@ -157,8 +158,8 @@ class TestbedOFELIA( Testbed ):
 		lhs_ospf_net = copy.deepcopy(ospf_net)
 		rhs_ospf_net = copy.deepcopy(ospf_net)
 
-		(lhs_vi, lhs_tap, lhs_ospf_net) = lhs.addIntf([rhs_eth_ip, lhs_eth, lhs_tap_port, rhs_tap_port, lhs_ospf_net, lhs_ip])
-		(rhs_vi, rhs_tap, rhs_ospf_net) = rhs.addIntf([lhs_eth_ip, rhs_eth, rhs_tap_port, lhs_tap_port, rhs_ospf_net, rhs_ip])
+		(lhs_vi, lhs_tap, lhs_ospf_net) = lhs.addIntf([rhs_eth_ip, lhs_eth, lhs_tap_port, rhs_tap_port, lhs_ospf_net, lhs_ip, rhs_ip])
+		(rhs_vi, rhs_tap, rhs_ospf_net) = rhs.addIntf([lhs_eth_ip, rhs_eth, rhs_tap_port, lhs_tap_port, rhs_ospf_net, rhs_ip, lhs_ip])
 
 		return [(lhs_vi, rhs_vi), (lhs_tap, rhs_tap), (lhs_ospf_net, rhs_ospf_net)]
 
@@ -171,7 +172,7 @@ class TestbedOFELIA( Testbed ):
 		
 	def addOSPFNet(self):
 		name = self.newOSPFNetName()
-		net = OSPFNetwork(name)
+		net = OSPFNetwork(name, self.ipNetAllocator.next_netAddress())
 		self.ospfnets.append(net)
 		self.nameToOSPFNet[name] = net
 		return net
@@ -198,9 +199,14 @@ class TestbedOFELIA( Testbed ):
 		lines = header.readlines()
 		for line in lines:
 			testbed.write(line)
+		
+		mgmtnet = (self.parser.mgmtnet.split("/"))[0]
+		testbed.write("# general configuration - start\n")
+		testbed.write("MGMTNET=%s\n" % mgmtnet)
+		testbed.write("# general configuration - end\n")
 		testbed.close()
 		for key, host in self.nameToNode.iteritems():
-			host.configure()
+			host.configure(self.parser.ipnet)
 
 	def start(self):
 		for osh in self.oshs:
@@ -213,7 +219,7 @@ class TestbedOFELIA( Testbed ):
 # XXX Test1 Create a Mesh Triangular Network, with 3 OSHI and 1 Controllers And Print The Internal Object of TestBed
 def test1():
 	print "*** Test1"
-	testbed = TestbedOFELIA("ofelia_mapping.json", verbose=False)
+	testbed = TestbedOFELIA("ofelia_mapping.map", verbose=False)
 	print "*** Create Core Networks"
 	oshis = []
 	for i in range(3):
@@ -280,7 +286,7 @@ def test1():
 # Finally Print The Internal Object of TestBed	
 def test2():
 	print "*** Test2"
-	testbed = TestbedOFELIA("ofelia_mapping.json", verbose=False)
+	testbed = TestbedOFELIA("ofelia_mapping.map", verbose=False)
 	print "*** Create Core Network"
 	oshis = []
 	for i in range(3):
@@ -368,13 +374,13 @@ def test3():
 	verbose = True
 	if verbose:
 		print "*** Build Topology From Parsed File"
-	parser = TestbedTopoParser("topo.json", verbose=True)
+	parser = TestbedTopoParser("topo5.json", verbose=True)
 	(ppsubnets, l2subnets) = parser.getsubnets()
 	set_oshis = parser.oshis
 	set_aoshis = parser.aoshis
 	set_l2sws = parser.l2sws
 	set_euhs = parser.euhs
-	testbed = TestbedOFELIA("ofelia_mapping.json", verbose = False)
+	testbed = TestbedOFELIA("ofelia_mapping.map", verbose = False)
 	if verbose:
 		print "*** Build OSHI"	
 	for oshi in set_oshis:
@@ -504,55 +510,10 @@ def test3():
 	print	
 	TestbedCLI(testbed)
 
-# XXX Test4 Build Topology Using Networkxx
-"""def test4():
-	g = nx.erdos_renyi_graph(6,0.8)
-	net = testbed = TestbedOFELIA("ofelia_mapping.json", verbose = False)
-	i = 0
-	h = 0
-	# This is the basic behavior, but we have to modify it in order to creare switched networks
-	oshis = int(floor(len(g.nodes)))
-	aoshis = len(g.nodes) - oshis
-	for i in range(0, oshis):
-		i = i + 1
-		testbed.addOshi('osh%s' % (i))
-	for i in range(oshis, len(g.nodes)):
-		i = i + 1
-		testbed.addAoshi('aos%s' % (i)))
-	for (n1, n2) in g.edges():
-		n1 = n1 + 1
-		n2 = n1 + n2 + 1
-		lhs = testbed.getNodeByName('osh%s' % n1)
-		rhs = net.getNodeByName('osh%s' % n2)
-		l = net.addLink(lhs, rhs)
-		nets.append(OSPFNetwork(intfs=[l.intf1.name,l.intf2.name], ctrl=False))
-		print "*** Connect", lhs, "To", rhs 
-
-	hosts_in_rn = []
-	c1 = RemoteController( 'c1', ip=ctrls_ip[0], port=ctrls_port[0])
-	ctrls.append(c1)
-	hosts_in_rn.append(c1)
-	# Connecting the controller to the network 
-	print "*** Connect %s" % oshi," To c1"
-	l = net.addLink(oshi, c1)
-	nets.append(OSPFNetwork(intfs=[l.intf1.name,l.intf2.name], ctrl=True, hello_int=5))
-	
-	# Only needed for hosts in root namespace
-	fixIntf(hosts_in_rn)
-
-	for network in nets:
-		print "*** Create Network:", network.subnet + "0,", str(network.intfs) + ",", "cost %s," % network.cost, "hello interval %s," % network.hello_int
-
-	# We generate the topo's png
-	pos = nx.circular_layout(g)
-        nx.draw(g, pos)
-        plt.savefig("topo.png")
-"""
-
 if __name__ == '__main__':
 	#test1()
-	test2()
-	#test3()
+	#test2()
+	test3()
 	
 
 	# Cemetery of Code

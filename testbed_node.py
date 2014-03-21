@@ -109,6 +109,7 @@ class Node:
 	def ethsSerialization(self):
 		return "declare -a INTERFACES=(" + " ".join("%s" % eth.name for eth in self.eths) + ")\n"
 
+# XXX Static Route could change in future
 class Host(Node):
 
 	def __init__( self, NODInfo, vlan, user, pwd):
@@ -117,6 +118,7 @@ class Host(Node):
 		self.endips = []
 		self.nameToEndIps = {}
 		self.taps = []
+		self.staticroutes = []
 		self.nameToTaps = {}
 		
 		self.endIPBase = 1
@@ -125,7 +127,7 @@ class Host(Node):
 		self.tapPortBase = 1190
 	
 	def addIntf(self, param):
-		if len(param) != 6:
+		if len(param) != 7:
 			print "Error Host.addIntf Invalid Parameter"
 			sys.exit(-2)
 		remote_ip = param[0]
@@ -134,6 +136,7 @@ class Host(Node):
 		remote_port =param[3]
 		net = param[4]
 		tap_ip = param[5]
+		self.staticroutes.append(param[6])
 		endip = self.addEndIP(remote_ip, local_eth)
 		tap = self.addTapIP(local_port, remote_port, endip.name, tap_ip, net.netbitOSPF)
 		return (None, tap, None)
@@ -174,7 +177,7 @@ class Host(Node):
 	def tapsSerialization(self):
 		return "declare -a TAP=(" + " ".join("%s" % tap.name for tap in self.taps) + ")\n"
 	
-	def configure(self):
+	def configure(self, ipbase):
 		testbed = open('testbed.sh','a')
 		testbed.write("# %s - start\n" % self.mgt_ip)
 		testbed.write("HOST=%s\n" % self.name)
@@ -185,6 +188,8 @@ class Host(Node):
 		testbed.write(self.tapsSerialization())
 		for tap in self.taps:
 			testbed.write(tap.serialize())
+		ip_and_mask = ipbase.split("/")
+		testbed.write("declare -a STATICROUTE=(%s %s %s %s)\n" %(ip_and_mask[0], ip_and_mask[1], self.staticroutes[0], self.taps[0].name))
 		for endip in self.endips:
 			testbed.write(endip.serialize())
 		testbed.write("# %s - end\n" % self.mgt_ip)
@@ -215,7 +220,6 @@ class Oshi(Host):
 		Host.__init__(self, NODInfo, vlan, user, pwd)
 		self.dpid = self.defaultDpid()
 		self.loopback = LoIntf(ip=self.next_loopbackAddress())
-		
 		self.vis = []
 		self.nameToVis = {}
 		self.ctrls = []
@@ -225,6 +229,8 @@ class Oshi(Host):
 		self.viBase = 1
 		
 		self.ospfNetBase = 1
+		loopbacknet = OSPFNetwork("fake", "%s/32" % self.loopback.ip )
+		self.addOSPFNet(loopbacknet)
 
 
 	def defaultDpid( self ):
@@ -254,7 +260,7 @@ class Oshi(Host):
 		return tap
 
 	def addIntf(self, param):
-		if len(param) != 6:
+		if len(param) != 7:
 			print "Error Oshi.addIntf Invalid Parameter"
 			sys.exit(-2)
 		remote_ip = param[0]
@@ -327,7 +333,7 @@ class Oshi(Host):
 	def ospfnetsSerialization(self):
 		return "declare -a OSPFNET=(" + " ".join("%s" % net.name for net in self.ospfnets) + ")\n"
 
-	def configure(self):
+	def configure(self, ipbase):
 		testbed = open('testbed.sh','a')
 		testbed.write("# %s - start\n" % self.mgt_ip)
 		testbed.write("HOST=%s\n" % self.name)

@@ -49,4 +49,4 @@
 #
 # NETX - Details of networks (named and listed above) to be anounced. Specify the network to be announced, the netmask and the OSPF area
 # i.e. declare -a net1 - net1=(192.168.0.0/24 0.0.0.0)
-#
+################################################################ ISTRUCTIONS END ###############################################################
