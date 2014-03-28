@@ -19,6 +19,9 @@ Information can be found here:
 Tips
 ==============
 
+Set Environment Variable At The Beginning Of testbed_deployer.py
+(vll_path)
+
 When you choose the build of Topology from json file, the topology
 must be saved in topo folder
 
@@ -45,7 +48,9 @@ Usage
 Mininet Deployer
 
 optional arguments:
+
   -h, --help           show this help message and exit
+
   --topology TOPOINFO  Topology Info topo:param
 
 		1) topo1:x Deploy A Core Mesh Network

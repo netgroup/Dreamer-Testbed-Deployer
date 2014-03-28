@@ -33,6 +33,14 @@ from testbed_cli import TestbedCLI
 from topo_parser import TestbedTopoParser
 import os
 
+import networkx as nx
+import numpy as np
+import matplotlib.pyplot as plt
+
+# XXX VLL Pusher Param
+vll_path = "" #"../sdn_controller_app/vll_pusher_for_floodlights/"	
+
+
 # XXX Create a Core Mesh Network, with "param" OSHI and 1 Controllers
 def topo1(param):
 	print "*** Test1"
@@ -315,7 +323,7 @@ def topo4(param):
 	"""		
 
 
-	vll_path = "../sdn_controller_app/vll_pusher_for_floodlights/"	
+	
 	path = vll_path + "vlls.json"
 	if(os.path.exists(path)):
 		print "*** Remove Vlls DB File"
@@ -342,6 +350,75 @@ def topo4(param):
 	testbed.configure()
 	TestbedCLI(testbed)
 
+def buildTopoFromNx(topo, args):
+	if topo == 'e_r':
+		data = args.split(",")
+		args = []
+		args.append(int(data[0]))
+		args.append(float(data[1]))
+		if len(args) >= 2:
+			if args [0] > 10 or args[1] > 1:
+				print "Warning Parameter Too High For Erdos Renyi", "Nodes %s" % args[0], "Interconnection Probability %s" % args[1]
+				print "Using Default Parameter"
+				args[0] = 5
+				args[1] = 0.8
+		else :
+			args[0] = 5
+			args[1] = 0.8
+		print "Erdos Renyi", "Nodes %s" % args[0], "Interconnection Probability %s" % args[1]
+		e_r(args[0], args[1])
+
+	print "Error NX Wrong Parameter"
+	sys.exit(-2) 
+
+def e_r(n, p):
+	g = nx.erdos_renyi_graph(n,p)
+	"Create An Erdos Reny Topo"
+	"Creating OSHI"
+
+	print "*** Test2"
+	testbed = TestbedOFELIA("ofelia_mapping.map", verbose=False)
+	print "*** Create Core Network"
+	oshis = []
+	for n in g.nodes():
+		n = n + 1
+		oshi = testbed.addOshi('osh%s' % (n))
+		oshis.append(oshi)
+
+	for (n1, n2) in g.edges():
+		n1 = n1 + 1
+		n2 = n2 + 1
+		lhs = ('osh%s' % n1)
+		rhs = ('osh%s' % n2)
+		l = testbed.addPPLink(lhs, rhs)
+		print "*** Connect", lhs, "To", rhs 
+
+	print "*** Create Controllers"
+	for i in range(1):
+		ctrl = testbed.addController("ctrl%s" % (i+1),"6633")
+		l = testbed.addPPLink(testbed.oshs[i].name, ctrl.name)
+		print "*** Connect", testbed.oshs[i].name, "To", ctrl.name
+		
+	print "*** Create Access Network"   
+	for i in range(n):
+		aoshi = testbed.addAoshi("aos%s" % (i+n+1))
+		l = testbed.addPPLink(testbed.oshs[i].name, aoshi.name)
+		print "*** Connect", testbed.oshs[i].name, "To", aoshi.name
+   
+	for i in range(n):
+		euh = testbed.addEuh("euh%s" % (i+1))
+		l = testbed.addPPLink(testbed.aoss[i].name, euh.name)
+		print "*** Connect", testbed.aoss[i].name, "To", euh.name
+
+	# We generate the topo's png
+	pos = nx.circular_layout(g)
+        nx.draw(g, pos)
+        plt.savefig("topo.png")
+
+	print "*** Configure Testbed"	
+	testbed.configure()
+	TestbedCLI(testbed)	
+
 def parse_cmd_line():
 	parser = argparse.ArgumentParser(description='Mininet Deployer')
 	parser.add_argument('--topology', dest='topoInfo', action='store', default='topo1:3', help='Topology Info topo:param see readme for further details')
@@ -352,8 +429,13 @@ def parse_cmd_line():
 	data = args.topoInfo.split(":")	
 	return (data[0], data[1])
 
+def check_precondition():
+	if vll_path == "":
+		print "Error Set Environment Variable At The Beginning Of File"
+		sys.exit(-2)
+
 if __name__ == '__main__':
-	
+	check_precondition()
 	(topo, param) = parse_cmd_line()
 	if topo == 'topo1':
 		print "*** Create Core Mesh[%s] Network" % param
