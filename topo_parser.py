@@ -7,6 +7,8 @@ from topo_parser_utils import Subnet
 from topo_parser_utils import TestbedSubnet
 
 class TopoParser:
+	
+	self.path = "./topo/"
 
 	# Init Function, load json_data from path_json
 	def __init__(self, path_json, verbose=False):

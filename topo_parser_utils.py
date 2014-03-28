@@ -86,7 +86,7 @@ class TestbedSubnet(Subnet):
         		Subnet.__init__(self, Type)
 
 		def getOrderedLinks(self):
-			print self.nodes			
+			#print self.nodes			
 			links = []
 			i = 0			
 			for i in range(0, len(self.nodes)):

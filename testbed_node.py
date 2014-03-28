@@ -189,7 +189,7 @@ class Host(Node):
 		for tap in self.taps:
 			testbed.write(tap.serialize())
 		ip_and_mask = ipbase.split("/")
-		testbed.write("declare -a STATICROUTE=(%s %s %s %s)\n" %(ip_and_mask[0], ip_and_mask[1], self.staticroutes[0], self.taps[0].name))
+		testbed.write("declare -a STATICROUTE=(%s %s %s %s)\n" %( ip_and_mask[0], ip_and_mask[1], self.staticroutes[0], self.taps[0].name))
 		for endip in self.endips:
 			testbed.write(endip.serialize())
 		testbed.write("# %s - end\n" % self.mgt_ip)
@@ -359,24 +359,3 @@ class Oshi(Host):
 			testbed.write(net.serialize())
 		testbed.write("# %s - end\n" % self.mgt_ip)
 		testbed.close()
-
-	# XXX Specific Dreamer Function
-	# TODO Check Output In Order To Return False
-	# When We Have An Error
-	# def start():
-	#	self.run("su", False)
-        #	self.run("./config.sh")
-        #	return True
-
-	# XXX Specific Dreamer Function
-	# TODO Check Output In Order To Return False
-	# When We Have An Error
-	# def stop():
-	#	self.run("su", False)
-        #	self.run("./clean.sh")
-        #	return True
-
-	
-	
-
-

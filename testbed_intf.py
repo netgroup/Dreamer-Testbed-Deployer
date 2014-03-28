@@ -84,11 +84,3 @@ class LoIntf(Intf):
 
 	def __str__(self):
 		return "{'name':'%s', 'ip':'%s', 'netbit':'%s', 'hello_int':'%s', 'cost':'%s'}" % (self.name, self.ip, self.netbit, self.cost, self.hello_int)
-
-
-
-
-
-
-
-

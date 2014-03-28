@@ -25,20 +25,6 @@ class EndIP:
 	def __str__(self):
         	return "{'name':'%s', 'endip':'%s' 'localintf':'%s'}" %(self.name, self.remoteIP, self.localIntf)
 
-# class StaticRoute:
-#	def __init__(self, name, remoteIP, localIntf):
-#		self.name = name
-#		self.remoteIP = remoteIP
-#		self.localIntf = localIntf
-#
-#	def serialize(self):
-#		return "declare -a %s=(%s %s)\n" %(self.name, self.remoteIP, self.localIntf)
-#
-#	def __str__(self):
-#        	return "{'name':'%s', 'endip':'%s' 'localintf':'%s'}" %(self.name, self.remoteIP, self.localIntf)
-#
-# declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.20.1 tap1)
-
 class OSPFNetwork:
 	
 	#ipBaseOSPF=[10, 0, 0, 0]
