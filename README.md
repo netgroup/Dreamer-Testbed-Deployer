@@ -1,3 +1,5 @@
+![Alt text](.git/dreamer-logo.png "Optional title")
+
 Dreamer-Testbed-Deployer
 ========================
 
