@@ -6,7 +6,7 @@ Testbed Deployer For Dreamer Project (GÉANT Open Call)
 Using this tool you can "literally" program your Testbed
 configuration file. Moreover you can connect in remote to the VM
 leveraging the internal CLI or execute remote command on single VM
-or on a group of VM. 
+or on a group of VMs. 
 
 License
 =======
@@ -39,4 +39,30 @@ Testbed Deployer Dependencies
 
 Usage
 =====
+
+./testbed_deployer.py [-h] [--topology TOPOINFO]
+
+Mininet Deployer
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --topology TOPOINFO  Topology Info topo:param
+
+		1) topo1:x Deploy A Core Mesh Network
+
+		2) topo2:x Deploy A Core Mesh Network And Simple Access
+
+		3) topo3:file Deploy A Network Taking The Data From JSON File
+
+		4) topo4:file Deploy A Network And Services(TODO) Taking The Data From JSON File 
+
+		5) e_r:x,y Deploy A Network And Preconfigured Services(TODO) Using Random Generation Of Networkx
+
+Todo
+=====
+
+1) Deploy Classification Services
+
+2) Deploy VLL Services
+
 

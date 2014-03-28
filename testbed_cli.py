@@ -26,6 +26,8 @@
 #
 # XXX Depends On Luca Prete Script
 
+import cmd
+
 class TestbedCLI(cmd.Cmd):
     """ TestbedCLI, run a command on moltiple  hosts """
 

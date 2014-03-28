@@ -34,7 +34,7 @@ from topo_parser_utils import TestbedSubnet
 
 class TopoParser:
 	
-	self.path = "./topo/"
+	path = "./topo/"
 
 	# Init Function, load json_data from path_json
 	def __init__(self, path_json, verbose=False):
@@ -50,6 +50,7 @@ class TopoParser:
 		self.subnetclass = Subnet
 		if self.verbose:
 			print "*** __init__:"
+		path_json = self.path + path_json
 		if os.path.exists(path_json) == False:
 			print "Error Topo File Not Found"
 			sys.exit(-2)
