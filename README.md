@@ -42,6 +42,12 @@ Testbed Deployer Dependencies
 
 3) matplotlib
 
+4) python-paramiko (apt)
+
+5) sshpass (apt)
+
+6) ipaddr-2.1.11 (web)
+
 Usage
 =====
 
