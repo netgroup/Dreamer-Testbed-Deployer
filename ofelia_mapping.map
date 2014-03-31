@@ -1,8 +1,8 @@
 {
 	"mgmtnet":"10.216.0.0/255.255.0.0",
 	"ipnet":"10.0.0.0/255.0.0.0",
-	"username":"",
-	"password":"",	
+	"username":"Add Your VPN's Username",
+	"password":"Add Your VPN's Password",	
 	"vlan":"199",
 	"core":[
 		[
