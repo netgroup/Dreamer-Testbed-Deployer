@@ -63,7 +63,7 @@ def topo1(param):
 
 	print "*** Configure Testbed"
 	testbed.configure()
-	TestbedCLI(testbed)
+	#TestbedCLI(testbed)
 
 # XXX First Create a Core Mesh Network, second for each coshi create an aoshi, link them and create the Controller.
 # Finally Print The Internal Object of TestBed	
@@ -92,7 +92,7 @@ def topo2(param):
 	
 	print "*** Configure Testbed"	
 	testbed.configure()
-	TestbedCLI(testbed)
+	#TestbedCLI(testbed)
 
 # XXX Build Topology From topo.json generated through TopologyDesigner
 def topo3(param):
@@ -155,7 +155,7 @@ def topo3(param):
 
 	print "*** Configure Testbed"
 	testbed.configure()
-	TestbedCLI(testbed)
+	#TestbedCLI(testbed)
 
 # XXX Test4 Build Topology From topo.json generated through TopologyDesigner And Build Configuration File For Classification Function
 # and for VLL pusher
@@ -348,7 +348,7 @@ def topo4(param):
 	
 	print "*** Configure Testbed"
 	testbed.configure()
-	TestbedCLI(testbed)
+	#TestbedCLI(testbed)
 
 def buildTopoFromNx(topo, args):
 	if topo == 'e_r':
@@ -417,7 +417,7 @@ def e_r(n, p):
 
 	print "*** Configure Testbed"	
 	testbed.configure()
-	TestbedCLI(testbed)	
+	#TestbedCLI(testbed)	
 
 def parse_cmd_line():
 	parser = argparse.ArgumentParser(description='Mininet Deployer')

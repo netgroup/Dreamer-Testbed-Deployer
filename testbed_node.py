@@ -53,7 +53,7 @@ class Node:
 		self.chan = None
 		self.conn = None
 		self.process = None
-		self.connect()
+		#self.connect()
 		for eth in NODInfo.intfs:
 			eth_intf = EthIntf(eth, self.next_testbedAddress(), self.netbitTestbed, self.netmaskTestbed)
 			self.eths.append(eth_intf)
