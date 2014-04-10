@@ -215,11 +215,10 @@ class TestbedOFELIA( Testbed ):
 		lines = header.readlines()
 		for line in lines:
 			testbed.write(line)
-		
-		mgmtnet = (self.parser.mgmtnet.split("/"))[0]
-		testbed.write("# general configuration - start\n")
-		testbed.write("MGMTNET=%s\n" % mgmtnet)
-		testbed.write("# general configuration - end\n")
+		#mgmtnet = (self.parser.mgmtnet.split("/"))[0]
+		#testbed.write("# general configuration - start\n")
+		#testbed.write("MGMTNET=%s\n" % mgmtnet)
+		#testbed.write("# general configuration - end\n")
 		testbed.close()
 		for key, host in self.nameToNode.iteritems():
 			host.configure(self.parser.ipnet)
