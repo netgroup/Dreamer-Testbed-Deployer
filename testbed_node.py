@@ -46,9 +46,6 @@ class Node:
 	def __init__( self, NODInfo, user, pwd):
 		self.name = NODInfo.name
 		self.mgt_ip = NODInfo.mgt_ip
-		self.mgmtnet = NODInfo.mgmtnet
-		self.mgmtgw = NODInfo.mgmtgw
-		self.mgmtintf = NODInfo.mgmtintf
 		self.eths = []
 		self.nameToEths = {}
 		self.user = user
@@ -199,17 +196,11 @@ class Host(Node):
 	def tapsSerialization(self):
 		return "declare -a TAP=(" + " ".join("%s" % tap.name for tap in self.taps) + ")\n"
 
-	def mgmtnetinfoSerialization(self):
-		mgmtnet = self.mgmtnet.split("/")[0]		
-		mgmtnetmask = self.mgmtnet.split("/")[1]
-		return "declare -a MGMTNET=(%s %s %s %s)\n" %(mgmtnet, mgmtnetmask, self.mgmtgw, self.mgmtintf)	
-
 	def configure(self, ipbase):
 		testbed = open('testbed.sh','a')
 		testbed.write("# %s - start\n" % self.mgt_ip)
 		testbed.write("HOST=%s\n" % self.name)
 		testbed.write("SLICEVLAN=%s\n" % self.vlan)
-		testbed.write(self.mgmtnetinfoSerialization())
 		testbed.write(self.ethsSerialization())
 		for eth in self.eths:
 			testbed.write(eth.serialize())
@@ -369,7 +360,6 @@ class Oshi(Host):
 		testbed.write("DPID=%s\n" % self.dpid)
 		testbed.write("SLICEVLAN=%s\n" % self.vlan)
 		testbed.write("BRIDGENAME=br-dreamer\n")
-		testbed.write(Host.mgmtnetinfoSerialization(self))
 		testbed.write(self.controllersSerialization())
 		testbed.write(self.loopback.serialize())
 		testbed.write(self.ethsSerialization())
