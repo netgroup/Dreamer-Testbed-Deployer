@@ -38,7 +38,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # XXX VLL Pusher Param
-vll_path = "" #"../sdn_controller_app/vll_pusher_for_floodlights/"	
+vll_path = "../sdn_controller_app/vll_pusher_for_floodlights/"	
 
 
 # XXX Create a Core Mesh Network, with "param" OSHI and 1 Controllers

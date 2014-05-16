@@ -1,5 +1,7 @@
 {
 	"mgmtnet":"10.216.0.0/255.255.0.0",
+	"mgmtgw":"10.216.32.1",
+	"mgmtintf":"eth0",
 	"ipnet":"10.0.0.0/255.0.0.0",
 	"username":"Add Your VPN's Username",
 	"password":"Add Your VPN's Password",	

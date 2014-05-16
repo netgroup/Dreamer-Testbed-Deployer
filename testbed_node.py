@@ -46,6 +46,9 @@ class Node:
 	def __init__( self, NODInfo, user, pwd):
 		self.name = NODInfo.name
 		self.mgt_ip = NODInfo.mgt_ip
+		self.mgt_net = NODInfo.mgt_net
+		self.mgt_gw = NODInfo.mgt_gw
+		self.mgt_intf = NODInfo.mgt_intf
 		self.eths = []
 		self.nameToEths = {}
 		self.user = user
@@ -201,6 +204,8 @@ class Host(Node):
 		testbed.write("# %s - start\n" % self.mgt_ip)
 		testbed.write("HOST=%s\n" % self.name)
 		testbed.write("SLICEVLAN=%s\n" % self.vlan)
+		data = self.mgt_net.split("/")
+		testbed.write("declare -a MGMTNET=(%s %s %s %s)\n" %(data[0], data[1], self.mgt_gw, self.mgt_intf))
 		testbed.write(self.ethsSerialization())
 		for eth in self.eths:
 			testbed.write(eth.serialize())
@@ -360,6 +365,8 @@ class Oshi(Host):
 		testbed.write("DPID=%s\n" % self.dpid)
 		testbed.write("SLICEVLAN=%s\n" % self.vlan)
 		testbed.write("BRIDGENAME=br-dreamer\n")
+		data = self.mgt_net.split("/")
+		testbed.write("declare -a MGMTNET=(%s %s %s %s)\n" %(data[0], data[1], self.mgt_gw, self.mgt_intf))
 		testbed.write(self.controllersSerialization())
 		testbed.write(self.loopback.serialize())
 		testbed.write(self.ethsSerialization())

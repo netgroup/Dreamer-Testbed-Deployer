@@ -46,6 +46,8 @@ class MappingParserOFELIA:
 		self.user = None
 		self.pwd = None
 		self.mgmtnet = None
+		self.mgmtgw = None
+		self.mgmtintf = None
 		self.ipnet = None
 		self.testbednet = None
 		self.loopbacknet = None
@@ -90,6 +92,14 @@ class MappingParserOFELIA:
 			print "*** Error No Management Net Data"
 			sys.exit(-2)
 		self.mgmtnet = self.json_data['mgmtnet']
+		if 'mgmtgw' not in self.json_data:
+			print "*** Error No Management Gateway Data"
+			sys.exit(-2)
+		self.mgmtgw = self.json_data['mgmtgw']
+		if 'mgmtintf' not in self.json_data:
+			print "*** Error No Management Interface Data"
+			sys.exit(-2)
+		self.mgmtintf = self.json_data['mgmtintf']
 		if 'ipnet' not in self.json_data:
 			print "*** Error No IP Net Data"
 			sys.exit(-2)
@@ -105,19 +115,19 @@ class MappingParserOFELIA:
 		if 'core' in self.json_data:
 			oshies = self.json_data['core']
 			for oshi in oshies:
-				self.oshis.append(NODInfo(oshi[0], oshi[1]))
+				self.oshis.append(NODInfo(oshi[0], oshi[1], self.mgmtnet, self.mgmtgw, self.mgmtintf))
 		if 'access' in self.json_data:
 			aoshies = self.json_data['access']
 			for aoshi in aoshies:
-				self.aoshis.append(NODInfo(aoshi[0], aoshi[1]))
+				self.aoshis.append(NODInfo(aoshi[0], aoshi[1], self.mgmtnet, self.mgmtgw, self.mgmtintf))
 		if 'ctrl' in self.json_data:
 			controllers = self.json_data['ctrl']
 			for controller in controllers:
-				self.ctrls.append(NODInfo(controller[0], controller[1]))
+				self.ctrls.append(NODInfo(controller[0], controller[1], self.mgmtnet, self.mgmtgw, self.mgmtintf))
 		if 'euh' in self.json_data:
 			euhos = self.json_data['euh']
 			for euh in euhos:
-				self.euhs.append(NODInfo(euh[0], euh[1]))
+				self.euhs.append(NODInfo(euh[0], euh[1], self.mgmtnet, self.mgmtgw, self.mgmtintf))
 			
 		if self.verbose:		
 			print "*** OSHI:"
@@ -136,7 +146,10 @@ class MappingParserOFELIA:
 
 class NODInfo:
 	
-	def __init__(self, mgt_ip, intfs):
+	def __init__(self, mgt_ip, intfs, mgmtnet, mgmtgw, mgmtintf):
 		self.mgt_ip = mgt_ip
 		self.intfs = intfs
 		self.name = None
+		self.mgt_net = mgmtnet
+		self.mgt_gw = mgmtgw
+		self.mgt_intf = mgmtintf
