@@ -242,8 +242,8 @@ class Oshi(Host):
 
 	def __init__( self, NODInfo, vlan, user, pwd):
 		Host.__init__(self, NODInfo, vlan, user, pwd)
-		self.dpid = self.defaultDpid()
 		self.loopback = LoIntf(ip=self.next_loopbackAddress())
+		self.dpid = self.loopbackDpid(self.loopback.ip,"00000000")
 		self.vis = []
 		self.nameToVis = {}
 		self.ctrls = []
@@ -256,6 +256,15 @@ class Oshi(Host):
 		loopbacknet = OSPFNetwork("fake", "%s/32" % self.loopback.ip )
 		self.addOSPFNet(loopbacknet)
 
+
+	def loopbackDpid(self, loopback, extrainfo):
+		splitted_loopback = loopback.split('.')
+		hexloopback = '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, splitted_loopback))
+		dpid = "%s%s" %(extrainfo, hexloopback)
+		if len(dpid)>16:
+			print "Unable To Derive DPID From Loopback and ExtraInfo";
+			sys.exit(-1)
+		return dpid
 
 	def defaultDpid( self ):
 		"Derive dpid from switch name, s1 -> 1"
