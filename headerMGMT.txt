@@ -1,0 +1,26 @@
+#!/bin/bash
+############################################################
+##        DREAMER IP/SDN Hyibrid Management Config        ##
+##                                                        ##
+##   Parameters to be set by the user for the management  ##
+##	 process through Distributed Shell (DSH)			  ##
+##                                                        ##
+############################################################
+# HowTO
+#
+# PLEASE, DO NOT USE WHITE SPACES
+#
+# DSH_GROUPS are the active groups in the topology, for example OSHI, EUH, etc.
+#
+# OSHI are the management IPs of the active machine in the OSHI group
+#
+# EUH are the the management IPs of the active machine in the EUH group
+#
+# CTRL are the management IPs of the active machine in the CTRL group
+#
+# L2SW are the management IPs of the active machine in the L2SW group
+#
+# ROUTER are the management IPs of the active machine in the ROUTER group
+#
+# NODE_LIST are the management IPs of the all active machine 
+################################################################ ISTRUCTIONS END ###############################################################

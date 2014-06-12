@@ -1,0 +1,16 @@
+#!/bin/bash
+############################################################
+##            DREAMER IP/SDN Hyibrid LME rules            ##
+##                                                        ##
+##      Parameters to be set by the user for the LME      ##
+##	    bootstrap configuration process  				  ##
+##                                                        ##
+############################################################
+# HowTO
+#
+# PLEASE, DO NOT USE WHITE SPACES
+#
+# Insert here your bootstrap rules, that you want to be pushed by LME
+#
+# Each line is an Open vSwitch rule 
+################################################################ ISTRUCTIONS END ###############################################################

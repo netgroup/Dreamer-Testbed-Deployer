@@ -1,146 +1,83 @@
 {
-   "vertices":[
-      "COSHI#01",
-      "AOSHI#02",
-      "AOSHI#03",
-      "AOSHI#04",
-      "COSHI#05",
-      "COSHI#06",
-      "L2SW#07",
-      "EUH#08"
-   ],
-   "edges":[
-      [
-         "AOSHI#03",
-         "COSHI#06",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":"edge_label"
-         }
-      ],
-      [
-         "AOSHI#04",
-         "COSHI#05",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":"edge_label"
-         }
-      ],
-      [
-         "COSHI#05",
-         "COSHI#06",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":"edge_label"
-         }
-      ],
-      [
-         "AOSHI#02",
-         "COSHI#01",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "COSHI#05",
-         "COSHI#01",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "L2SW#07",
-         "AOSHI#03",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#08",
-         "L2SW#07",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ]
-   ],
-   "pos":{
-      "COSHI#01":[
-         648,
-         328.1875
-      ],
-      "AOSHI#02":[
-         799,
-         434.1875
-      ],
-      "AOSHI#03":[
-         82,
-         331.1875
-      ],
-      "AOSHI#04":[
-         750,
-         87.1875
-      ],
-      "COSHI#05":[
-         446,
-         211.1875
-      ],
-      "COSHI#06":[
-         271,
-         223.1875
-      ],
-      "L2SW#07":[
-         88,
-         431.1875
-      ],
-      "EUH#08":[
-         154,
-         551.1875
-      ]
-   },
-   "node_properties":{
-      "COSHI#01":{
-         "frozen":false,
-         "loopback":""
-      },
-      "AOSHI#02":{
-         "frozen":false,
-         "loopback":""
-      },
-      "AOSHI#03":{
-         "frozen":false,
-         "loopback":""
-      },
-      "AOSHI#04":{
-         "frozen":false,
-         "loopback":""
-      },
-      "COSHI#05":{
-         "frozen":false,
-         "loopback":""
-      },
-      "COSHI#06":{
-         "frozen":false,
-         "loopback":""
-      },
-      "L2SW#07":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#08":{
-         "frozen":false,
-         "loopback":""
-      }
-   },
-   "name":"G"
+	"vertices": [
+		"COSHI#01",
+		"COSHI#02",
+		"COSHI#03"
+	],
+	"edges": [
+		[
+			"COSHI#02",
+			"COSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				},
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#01",
+			"COSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				},
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#02",
+			"COSHI#01",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				},
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		]
+	],
+	"pos": {
+		"COSHI#01": [
+			306,
+			149
+		],
+		"COSHI#02": [
+			388,
+			159
+		],
+		"COSHI#03": [
+			331,
+			226
+		]
+	},
+	"node_properties": {
+		"COSHI#01": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"COSHI#02": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"COSHI#03": {
+			"frozen": false,
+			"loopback": ""
+		}
+	},
+	"advanced": {
+		"tunneling": "VXLAN"
+	},
+	"name": "G"
 }

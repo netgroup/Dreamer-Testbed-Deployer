@@ -1,344 +1,160 @@
 {
-   "vertices":[
-      "COSHI#01",
-      "AOSHI#02",
-      "AOSHI#03",
-      "AOSHI#04",
-      "COSHI#05",
-      "COSHI#06",
-      "L2SW#07",
-      "EUH#08",
-      "EUH#09",
-      "L2SW#9",
-      "EUH#10",
-      "L2SW#11",
-      "EUH#12",
-      "EUH#13",
-      "L2SW#14",
-      "EUH#15",
-      "EUH#16"
-   ],
-   "edges":[
-      [
-         "COSHI#01",
-         "AOSHI#04",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":"edge_label"
-         }
-      ],
-      [
-         "AOSHI#04",
-         "COSHI#05",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":"edge_label"
-         }
-      ],
-      [
-         "COSHI#05",
-         "COSHI#06",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":"edge_label"
-         }
-      ],
-      [
-         "L2SW#9",
-         "AOSHI#03",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "L2SW#07",
-         "AOSHI#03",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#10",
-         "L2SW#9",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#09",
-         "L2SW#07",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#08",
-         "L2SW#07",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "L2SW#11",
-         "AOSHI#04",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "AOSHI#02",
-         "COSHI#01",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "L2SW#14",
-         "AOSHI#02",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#16",
-         "L2SW#14",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#15",
-         "L2SW#14",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#13",
-         "L2SW#11",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "EUH#12",
-         "L2SW#11",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "COSHI#06",
-         "COSHI#01",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "COSHI#06",
-         "AOSHI#04",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "COSHI#06",
-         "AOSHI#03",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "AOSHI#03",
-         "COSHI#01",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ],
-      [
-         "AOSHI#02",
-         "AOSHI#04",
-         {
-            "labe_to_node1":"",
-            "labe_to_node2":"",
-            "edge_label":""
-         }
-      ]
-   ],
-   "pos":{
-      "COSHI#01":[
-         719.5982627578718,
-         424.18750000000006
-      ],
-      "AOSHI#02":[
-         580.5043084528841,
-         544.2105263157894
-      ],
-      "AOSHI#03":[
-         381.92644442904333,
-         406.31578947368416
-      ],
-      "AOSHI#04":[
-         762.9812645829002,
-         206.31578947368422
-      ],
-      "COSHI#05":[
-         562.7957488148081,
-         93.61150353479427
-      ],
-      "COSHI#06":[
-         413.59351802605613,
-         204.90998412462906
-      ],
-      "L2SW#07":[
-         271.9035738212396,
-         549.4736842105264
-      ],
-      "EUH#08":[
-         155.61923903250397,
-         683.1578947368421
-      ],
-      "EUH#09":[
-         311.2613486728117,
-         696.8421052631579
-      ],
-      "L2SW#9":[
-         177.08711622427057,
-         230.5263157894737
-      ],
-      "EUH#10":[
-         110,
-         80
-      ],
-      "L2SW#11":[
-         872.4755700325734,
-         208.1875
-      ],
-      "EUH#12":[
-         990,
-         119.1875
-      ],
-      "EUH#13":[
-         974.71226927253,
-         359.1875
-      ],
-      "L2SW#14":[
-         751.3528311040266,
-         606.3157894736842
-      ],
-      "EUH#15":[
-         867.6371658927623,
-         604.2105263157894
-      ],
-      "EUH#16":[
-         777.2931827107445,
-         720
-      ]
-   },
-   "node_properties":{
-      "COSHI#01":{
-         "frozen":false,
-         "loopback":""
-      },
-      "AOSHI#02":{
-         "frozen":false,
-         "loopback":""
-      },
-      "AOSHI#03":{
-         "frozen":false,
-         "loopback":""
-      },
-      "AOSHI#04":{
-         "frozen":false,
-         "loopback":""
-      },
-      "COSHI#05":{
-         "frozen":false,
-         "loopback":""
-      },
-      "COSHI#06":{
-         "frozen":false,
-         "loopback":""
-      },
-      "L2SW#07":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#08":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#09":{
-         "frozen":false,
-         "loopback":""
-      },
-      "L2SW#9":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#10":{
-         "frozen":false,
-         "loopback":""
-      },
-      "L2SW#11":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#12":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#13":{
-         "frozen":false,
-         "loopback":""
-      },
-      "L2SW#14":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#15":{
-         "frozen":false,
-         "loopback":""
-      },
-      "EUH#16":{
-         "frozen":false,
-         "loopback":""
-      }
-   },
-   "name":"G"
+	"vertices": [
+		"COSHI#01",
+		"COSHI#02",
+		"AOSHI#03",
+		"AOSHI#04",
+		"EUH#05",
+		"EUH#06"
+	],
+	"edges": [
+		[
+			"COSHI#01",
+			"AOSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#01",
+			"AOSHI#04",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#01",
+			"COSHI#02",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				},
+				{
+					"edge_label": "",
+					"vll": false
+				},
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#02",
+			"AOSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#02",
+			"AOSHI#04",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"AOSHI#04",
+			"EUH#05",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"AOSHI#03",
+			"EUH#06",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"EUH#06",
+			"EUH#05",
+			[
+				{
+					"edge_label": "",
+					"vll": true
+				},
+				{
+					"edge_label": "",
+					"vll": true
+				}
+			]
+		]
+	],
+	"pos": {
+		"COSHI#01": [
+			406.0814497454393,
+			235.98860663924793
+		],
+		"COSHI#02": [
+			414.7825835612344,
+			313.1625305573233
+		],
+		"AOSHI#03": [
+			310.9693774421621,
+			230.26894067580184
+		],
+		"AOSHI#04": [
+			497.1914168053585,
+			209.0359945253454
+		],
+		"EUH#05": [
+			447.6564497114368,
+			89.72778778973311
+		],
+		"EUH#06": [
+			327.1531752890338,
+			101.9237190253783
+		]
+	},
+	"node_properties": {
+		"COSHI#01": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"COSHI#02": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"AOSHI#03": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"AOSHI#04": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"EUH#05": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"EUH#06": {
+			"frozen": false,
+			"loopback": ""
+		}
+	},
+	"advanced": {
+		"tunneling": "OpenVPN"
+	},
+	"name": "G"
 }

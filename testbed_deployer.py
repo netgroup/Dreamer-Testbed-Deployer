@@ -27,401 +27,287 @@
 # XXX Depends On Luca Prete Script
 
 import argparse
+
+parser_path = "../Dreamer-Topology-Parser-and-Validator/"
 import sys
-from testbed import TestbedOFELIA
+sys.path.append(parser_path)
+from topo_parser import TopoParser
+
+from testbed import *
 from testbed_cli import TestbedCLI
-from topo_parser import TestbedTopoParser
+from coexistence_mechanisms import *
+from ingress_classification import *
+from testbed_deployer_utils import *
 import os
 
-import networkx as nx
-import numpy as np
-import matplotlib.pyplot as plt
-
 # XXX VLL Pusher Param
-vll_path = "" #"../vll_pusher_for_floodlights/"	
+vll_path = "../vll_pusher_for_floodlights/"	
 
-
-# XXX Create a Core Mesh Network, with "param" OSHI and 1 Controllers
-def topo1(param):
-	print "*** Test1"
-	testbed = TestbedOFELIA("ofelia_mapping.map", verbose=False)
-	print "*** Create Core Network"
-	oshis = []
-	for i in range(param):
-		oshi = testbed.addOshi("osh%s" % (i+1))
-		oshis.append(oshi)
-	i = 0
-
-	for i in range(0, len(oshis)-1):
-		for j in range(i + 1, len(oshis)):
-			l = testbed.addPPLink(oshis[i].name, oshis[j].name)
-			print "*** Connect", oshis[i].name, "To", oshis[j].name 
-	
-	print "*** Create Controllers"
-	ctrl = testbed.addController('ctrl1', 6633)
-	testbed.addPPLink(oshis[0].name, ctrl.name)
-
-	print "*** Configure Testbed"
-	testbed.configure()
-	#TestbedCLI(testbed)
-
-# XXX First Create a Core Mesh Network, second for each coshi create an aoshi, link them and create the Controller.
-# Finally Print The Internal Object of TestBed	
-def topo2(param):
-	print "*** Test2"
-	testbed = TestbedOFELIA("ofelia_mapping.map", verbose=False)
-	print "*** Create Core Network"
-	oshis = []
-	for i in range(param):
-		oshi = testbed.addOshi("osh%s" % (i+1))
-		for lhs in oshis:
-			l = testbed.addPPLink(lhs.name, oshi.name)
-			print "*** Connect", lhs.name, "To",oshi.name
-		oshis.append(oshi)
-	print "*** Create Controllers"
-	for i in range(1):
-		ctrl = testbed.addController("ctrl%s" % (i+1),"6633")
-		l = testbed.addPPLink(testbed.oshs[i].name, ctrl.name)
-		print "*** Connect", testbed.oshs[i].name, "To", ctrl.name
-		
-	print "*** Create Access Network"   
-	for i in range(param):
-		aoshi = testbed.addAoshi("aos%s" % (i+4))
-		l = testbed.addPPLink(testbed.oshs[i].name, aoshi.name)
-		print "*** Connect", testbed.oshs[i].name, "To", aoshi.name
-	
-	print "*** Configure Testbed"	
-	testbed.configure()
-	#TestbedCLI(testbed)
-
-# XXX Build Topology From topo.json generated through TopologyDesigner
-def topo3(param):
-	verbose = True
-	if verbose:
-		print "*** Build Topology From Parsed File"
-	parser = TestbedTopoParser(param, verbose=True)
-	(ppsubnets, l2subnets) = parser.getsubnets()
-	set_oshis = parser.oshis
-	set_aoshis = parser.aoshis
-	set_l2sws = parser.l2sws
-	set_euhs = parser.euhs
-	testbed = TestbedOFELIA("ofelia_mapping.map", verbose = False)
-	if verbose:
-		print "*** Build OSHI"	
-	for oshi in set_oshis:
-		testbed.addOshi(oshi)
-	if verbose:
-		print "*** Build AOSHI"
-	for aoshi in set_aoshis:
-		testbed.addAoshi(aoshi)
-
-	print "*** Build CONTROLLER"
-	ctrl = testbed.addController("ctrl1", 6633)
-	testbed.addPPLink(oshi, ctrl.name)
-
-	if verbose:
-		print "*** Build EUHS"
-	for euh in set_euhs:
-		testbed.addEuh(euh)	
-
-	if verbose:	
-		print "*** Create Core Networks Point To Point"
-	i = 0
-	for ppsubnet in ppsubnets:
-		if ppsubnet.type == "CORE":
-			links = ppsubnet.getOrderedLinks()
-			if verbose:
-				print "*** Subnet: Node %s - Links %s" %(ppsubnet.nodes, links)
-			node1 = links[0][0]
-			node2 = links[0][1]
-			l = testbed.addPPLink(node1, node2)
-			if verbose:			
-				print "*** Connect", node1, "To", node2
-		i = i + 1
-	if verbose:	
-		print "*** Create Access Networks Point To Point"
-	i = 0
-	for ppsubnet in ppsubnets:
-		if ppsubnet.type == "ACCESS":
-			links = ppsubnet.getOrderedLinks()
-			if verbose:
-				print "*** Subnet: Node %s - Links %s" %(ppsubnet.nodes, links)
-			node1 = links[0][0]
-			node2 = links[0][1]
-			l = testbed.addPPLink(node1, node2)
-			if verbose:			
-				print "*** Connect", node1, "To", node2
-		i = i + 1
-
-	print "*** Configure Testbed"
-	testbed.configure()
-	#TestbedCLI(testbed)
-
-# XXX Test4 Build Topology From topo.json generated through TopologyDesigner And Build Configuration File For Classification Function
+# XXX Build Topology From topo.json generated through TopologyDesigner And Build Configuration File For Classification Function
 # and for VLL pusher
 # TODO Generation Configuration File For Classification Function
 # TODO Properly Generation of testbed.sh for the VLL
 
-def conf_flows_ingress_egress_no_vlan_approach(oshi, i, intf):
-	if CORE_APPROACH == 'B':
-		print "*** Already Done Same Approach Between Core And Access"
-	elif CORE_APPROACH == 'A':
-		print "*** Add Rule For No Vlan Access Approach"
-		VLAN_IP = 1 # Core Vlan	
-		eth_intf = intf
-		eth_port_number = convert_port_name_to_number(oshi.name, eth_intf)
-		vi_intf = "vi%s" % strip_number(eth_intf)
-		vi_port_number = convert_port_name_to_number(oshi.name, vi_intf)
-		oshi.cmd("ovs-ofctl del-flows br-%s in_port=%s,dl_vlan=%s" % (oshi.name,eth_port_number,VLAN_IP))
-		oshi.cmd("ovs-ofctl add-flow br-%s hard_timeout=0,priority=300,in_port=%s,dl_vlan=%s,actions=mod_vlan_vid:%s,output:%s" % (oshi.name,eth_port_number,"0xffff",VLAN_IP,vi_port_number))
-		oshi.cmd("ovs-ofctl add-flow br-%s hard_timeout=0,priority=300,in_port=%s,dl_vlan=%s,actions=strip_vlan,output:%s" % (oshi.name,vi_port_number,VLAN_IP,eth_port_number)) 
 
+def simpleRouter(param):
+	
+	verbose = True	
 
-def conf_flows_vlan_approach(oshi, eth_ports, vi_ports):
-	print "*** Configuring Flows Classifier A For", oshi
-	VLAN_IP = 1
-	size = len(eth_ports)
+	if verbose:
+		print "*** No Autogenerated"
+	generator = PropertiesGenerator("GOFF")
+
+	if verbose:
+		print "*** Create %s Routers" % param
+	routers_n = []
 	i = 0
-	for i in range(size):
-		oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " hard_timeout=0,priority=300,in_port=" + str(eth_ports[i])
-		+ ",dl_vlan=" + str(VLAN_IP) + ",action=output:" + str(vi_ports[i]))
-		oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " hard_timeout=0,priority=300,in_port=" + str(vi_ports[i])
-		+ ",dl_vlan=" + str(VLAN_IP) + ",action=output:" + str(eth_ports[i]))
-	oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " hard_timeout=0,priority=400,dl_type=0x88cc,action=controller")
-	oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " hard_timeout=0,priority=400,dl_type=0x8942,action=controller")
+	for i in range(int(param)):
+		routers_n.append("rou%s" % (i+1))
+	
+	if verbose:
+		print "*** Create One L2Sw"
+	l2sws_n = []
+	l2sws_n.append("l2sw%s" % (int(param)+1))
 
-def conf_flow_no_vlan_approach(oshi, eth_ports, vi_ports):
-	print "*** Configuring Flows Classifier B For", oshi	
-	size = len(eth_ports)
+	if verbose:
+		print "*** Create %s EUHs" % param
+	euhs_n = []
+	for i in range((int(param)+1),(2 * int(param)+1)):
+		euhs_n.append("euh%s" % (i+1))
+	
+	if verbose:
+		print "*** Build Vertices Properties"
+		routers_properties = generator.getVerticesProperties(routers_n)
+		l2sws_properties = generator.getVerticesProperties(l2sws_n)
+		euhs_properties = generator.getVerticesProperties(euhs_n)
+
+	print "*** simpleRouter With", param, "Router"
+	testbed = TestbedRouterGOFF("OpenVPN", "10.0.0.0/255.0.0.0", verbose = False)
+	
+	links = []
+	for i in range(int(param)):
+		links.append((routers_n[i],"l2sw4"))
+
+	l2switch = testbed.addL2Switch(l2sws_n[0])
+
+	routers = []
+	for i in range(int(param)):
+		routers.append(testbed.addRouter(routers_n[i], routers_properties[i]))
+
+	l2_properties = generator.getLinksProperties(links)
+
 	i = 0
-	oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " \"table=0,hard_timeout=0,priority=300,dl_vlan=0xffff,actions=resubmit(,1)\"")
-	for i in range(size):
-		oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " \"table=1,hard_timeout=0,priority=300,in_port=" + str(eth_ports[i])
-		+ ",action=output:" + str(vi_ports[i]) + "\"")
-		oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " \"table=1,hard_timeout=0,priority=300,in_port=" + str(vi_ports[i])
-		+ ",action=output:" + str(eth_ports[i]) + "\"")
-	oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " \"table=1,hard_timeout=0,priority=400,dl_type=0x88cc,action=controller\"")
-	oshi.cmd("ovs-ofctl add-flow br-" + oshi.name + " \"table=1,hard_timeout=0,priority=400,dl_type=0x8942,action=controller\"")
+	for i in range(int(param)):
+		testbed.addLink(routers[i].name, l2switch.name, l2_properties[i])
+		if verbose:			
+			print "*** Connect", routers[i].name, "To", l2switch.name
+			print "*** Link Properties", l2_properties[i]
 
+	euhs = []
+	for i in range(int(param)):
+		euh = testbed.addEuh(euhs_n[i])
+		linkproperty = generator.getLinksProperties((euh.name, routers[i].name))
+		testbed.addLink(euh.name, routers[i].name, linkproperty[0])
+		if verbose:			
+			print "*** Connect", euh.name, "To", routers[i].name
+			print "*** Link Properties", linkproperty[0]
 
-def topo4(param):
+	print "*** Generate testbed.sh"
+	testbed.configure()
+	print "*** Generate MGMT cfg"
+	testbed.generateMGMTCfg()
 
-	LHS_tunnel = ['euh2']#,'euh2', 'euh3','euh4','euh5','euh6','euh7']	
-	RHS_tunnel = ['euh3']#,'euh3', 'euh4','euh5','euh6','euh7','euh1']	
+def meshRouter(param):
+	
+	verbose = True	
+
+	if verbose:
+		print "*** No Autogenerated"
+	generator = PropertiesGenerator("GOFF")
+	
+	if verbose:
+		print "*** Create Routers"
+	routers_n = ["rou%s" % (x + 1) for x in range(int(param))]
+	if verbose:
+		print "*** Create Hosts"
+	euhs_n = ["euh%s" % (x + 1) for x in range(int(param), (2 * int(param)))]
+	if verbose:
+		print "*** Build Vertices Properties"
+		routers_properties = generator.getVerticesProperties(routers_n)
+		euhs_properties = generator.getVerticesProperties(euhs_n)
+
+	print "*** Mesh With", param, "Router"
+	testbed = TestbedRouterGOFF("OpenVPN", "10.0.0.0/255.0.0.0", verbose = False)
+	
+	routers = []
+	for i in range(int(param)):
+		router = testbed.addRouter(routers_n[i], routers_properties[i])
+		for rhs in routers:
+			linkproperty = generator.getLinksProperties((router.name, rhs.name))
+			testbed.addLink(router.name, rhs.name, linkproperty[0])
+			if verbose:			
+				print "*** Connect", router.name, "To", rhs.name
+				print "*** Link Properties", linkproperty[0]
+			linkproperty = generator.getLinksProperties((router.name, rhs.name))
+			testbed.addLink(router.name, rhs.name, linkproperty[0])
+			if verbose:			
+				print "*** Connect", router.name, "To", rhs.name
+				print "*** Link Properties", linkproperty[0]
+		routers.append(router)
+
+	euhs = []
+	for i in range(int(param)):
+		euh = testbed.addEuh(euhs_n[i])
+		linkproperty = generator.getLinksProperties((euh.name, routers[i].name))
+		testbed.addLink(euh.name, routers[i].name, linkproperty[0])
+		if verbose:			
+			print "*** Connect", euh.name, "To", routers[i].name
+			print "*** Link Properties", linkproperty[0]
+
+	print "*** Generate testbed.sh"
+	testbed.configure()
+	print "*** Generate MGMT cfg"
+	testbed.generateMGMTCfg()
+	
+
+def topo(param):
 
 	verbose = True
 	if verbose:
 		print "*** Build Topology From Parsed File"
-	parser = TestbedTopoParser(param, verbose=False)
+	parser = TopoParser(param, verbose = False)
 	(ppsubnets, l2subnets) = parser.getsubnets()
+	vlls = parser.getVLLs()
+	# XXX
+	if parser.autogenerated == False:
+
+		if verbose:
+			print "*** No Autogenerated"
+		# XXX OFELIA
+		generator = PropertiesGenerator("OFELIA")
+		if verbose:
+			print "*** Build Vertices Properties"
+			oshis_properties = generator.getVerticesProperties(parser.oshis)
+			aoshis_properties = generator.getVerticesProperties(parser.aoshis)
+			l2sws_properties = generator.getVerticesProperties(parser.l2sws)
+			euhs_properties = generator.getVerticesProperties(parser.euhs)
+
+		if verbose:
+			print "*** Build Point-To-Point Links Properties"
+		pp_properties = []
+		for ppsubnet in ppsubnets:
+			pp_properties.append(generator.getLinksProperties(ppsubnet.links))
+		
+		if verbose:
+			print "*** Build Switched Links Properties"
+		l2_properties = []
+		for l2subnet in l2subnets:
+			l2_properties.append(generator.getLinksProperties(l2subnet.links))
+
+		if verbose:
+			print "*** Build VLLs Properties"
+		vlls_properties = []
+		for vll in vlls:
+			vlls_properties.append(generator.getVLLsProperties(vll))
+			
+
 	set_oshis = parser.oshis
 	set_aoshis = parser.aoshis
 	set_l2sws = parser.l2sws
 	set_euhs = parser.euhs
-	testbed = TestbedOFELIA("ofelia_mapping.map", verbose = False)
+	# XXX OFELIA
+	testbed = TestbedOSHIOFELIA("VXLAN", "10.0.0.0/255.0.0.0", verbose = False)
 	if verbose:
-		print "*** Build OSHI"	
+		print "*** Build OSHI"
+	i = 0	
 	for oshi in set_oshis:
-		testbed.addOshi(oshi)
+		testbed.addOshi(oshi, oshis_properties[i])
+		if verbose:
+			print "*** %s - %s" %(oshi, oshis_properties[i])
+		i = i + 1
 	if verbose:
 		print "*** Build AOSHI"
+	i = 0
 	for aoshi in set_aoshis:
-		testbed.addAoshi(aoshi)	
+		testbed.addAoshi(aoshi, aoshis_properties[i])
+		if verbose:
+			print "*** %s - %s" %(aoshi, aoshis_properties[i])	
+		i = i + 1
+	if verbose:
+		print "*** Build L2Switch"
+	i = 0
+	for l2switch in set_l2sws:
+		testbed.addL2Switch(l2switch)	
+		i = i + 1
 	if verbose:
 		print "*** Build CONTROLLER"
-	ctrl = testbed.addController("ctrl1", 6633)
-	testbed.addPPLink(oshi, ctrl.name)
+	ctrl = testbed.addController("ctrl1", 6633)	
+	coex = CoexA(1)
+	testbed.addCoexistenceMechanism(coex)
+	linkproperties = generator.getLinksProperties((oshi, ctrl.name))
+	[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(oshi, ctrl.name, linkproperties[0])
+	ingress = IngrB(coex, lhs_tap, lhs_vi)
+	testbed.addIngressClassification(ctrl.name, oshi, ingress)
+	if verbose:			
+		print "*** Connect", ctrl.name, "To", oshi
 
 	if verbose:
 		print "*** Build EUHS"
 	for euh in set_euhs:
 		testbed.addEuh(euh)
 
-	for i in range(0,len(LHS_tunnel)):
-		host1 = LHS_tunnel[i]
-		host2 = RHS_tunnel[i]
-		if host1 not in set_euhs or host2 not in set_euhs:
-			print "Error Misconfiguration Virtual Leased Line"
-			print "Error Cannot Connect", host1, "To", host2
-			sys.exit(2)
-	
-
 	if verbose:	
-		print "*** Create Core Networks Point To Point"
+		print "*** Create Networks Point To Point"
 	i = 0
 	for ppsubnet in ppsubnets:
-		if ppsubnet.type == "CORE":
-			links = ppsubnet.getOrderedLinks()
+			links = ppsubnet.links
 			if verbose:
 				print "*** Subnet: Node %s - Links %s" %(ppsubnet.nodes, links)
 			node1 = links[0][0]
 			node2 = links[0][1]
-			l = testbed.addPPLink(node1, node2)
+			[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(node1, node2, pp_properties[i][0])
 			if verbose:			
 				print "*** Connect", node1, "To", node2
-		i = i + 1
+				print "*** Link Properties", pp_properties[i][0]
+			i = i + 1
+
 	if verbose:	
-		print "*** Create Access Networks Point To Point"
-
-	dpid_to_access_tap = {}
-	host_to_aos = {}		
-	default = ""
-
-	i = 0
-	for ppsubnet in ppsubnets:
-		if ppsubnet.type == "ACCESS":
-			links = ppsubnet.getOrderedLinks()
+		print "*** Create Switched Networks"
+	j = 0
+	for l2subnet in l2subnets:
+			links = l2subnet.links
+			if verbose:
+					print "*** Subnet: Node %s - Links %s" %(l2subnet.nodes, links)
+			i = 0
 			for link in links:
-				if verbose:
-					print "*** Subnet: Node %s - Links %s" %(ppsubnet.nodes, links)
 				node1 = link[0]
 				node2 = link[1]
-				[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addPPLink(node1, node2)
-				if 'aos' in node1:
-					intfs = dpid_to_access_tap.get(node1, default).split(",")
-					if lhs_tap.name not in intfs:
-						dpid_to_access_tap[node1] = dpid_to_access_tap.get(node1, default) + lhs_tap.name + ","
-					if 'euh' in node2:
-						host_to_aos[node2] = node1
-					else:
-						print "Errore Node2 Non e' host"
-					 			
-				elif 'aos' in node2:
-					intfs = dpid_to_access_tap.get(node2, default).split(",")
-					if rhs_tap.name not in intfs:
-						dpid_to_access_tap[node2] = dpid_to_access_tap.get(node2, default) + rhs_tap.name + ","				
-					if 'euh' in node1:
-						host_to_aos[node1] = node2
-					else:
-						print "Errore Node2 Non e' host"
+				[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(node1, node2, l2_properties[j][i])
 				if verbose:			
 					print "*** Connect", node1, "To", node2
-		i = i + 1
+					print "*** Link Properties", l2_properties[j][i]
+				i = i + 1
+			j = j + 1
 
-	print dpid_to_access_tap
-	print host_to_aos
-
-	"""CORE_APPROACH = "A"
-
-	class_path = "./"
-	print "*** Create Configuration File For Classification Function"
-	path = class_path + "classifier.cfg"
-	classifier_cfg = open(path,"w")		
-		
-	for osh in testbed.oshs:
-		classifier_cfg.write("# %s - start" % osh.mgt_ip)
-		if CORE_APPROACH == "A":
-			conf_flows_vlan_approach(osh, classifier_cfg):
-		else:
-			conf_flows_no_vlan_approach(osh, classifier_cfg):
-
-	for aos in testbed.aoss:
-		if CORE_APPROACH == "A":
-			conf_flows_vlan_approach(aos, classifier_cfg):
-		else:
-			conf_flows_no_vlan_approach(aos, classifier_cfg):
-	"""		
-
+	i = 0
+	for vll in vlls:
+		testbed.addVLL(vll[0], vll[1], vlls_properties[i])
+		if verbose:			
+			print "*** VLLs Properties", vlls_properties[i]
+		i = i + 1	
+	print "*** Generate testbed.sh"
+	testbed.configure()
+	print "*** Generate LME rules"
+	testbed.generateLMErules()
+	print "*** Generate VLL pusher cfg"
+	testbed.generateVLLCfg(vll_path)
+	print "*** Generate MGMT cfg"
+	testbed.generateMGMTCfg()
 
 	
-	path = vll_path + "vlls.json"
-	if(os.path.exists(path)):
-		print "*** Remove Vlls DB File"
-		os.remove(path)
-
-	print "*** Create Configuration File For Vll Pusher"
-	path = vll_path + "vll_pusher.cfg"
-	vll_pusher_cfg = open(path,"w")	
-
-	for i in range(0, len(LHS_tunnel)):
-		host = LHS_tunnel[i]
-		lhs_aos = host_to_aos[host]	
-		[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addPPLink(host, lhs_aos)
-		lhs_port = (rhs_tap.name)
-		host = RHS_tunnel[i]
-		rhs_aos = host_to_aos[RHS_tunnel[i]]	
-		[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addPPLink(host, rhs_aos)
-		rhs_port = (rhs_tap.name)
-		vll_pusher_cfg.write("%s|%s|%s|%s|%d|%d|\n" % (lhs_aos, rhs_aos, lhs_port, rhs_port, 0, 0))
-
-	vll_pusher_cfg.close()
-	
-	print "*** Configure Testbed"
-	testbed.configure()
-	#TestbedCLI(testbed)
-
-def buildTopoFromNx(topo, args):
-	if topo == 'e_r':
-		data = args.split(",")
-		args = []
-		args.append(int(data[0]))
-		args.append(float(data[1]))
-		if len(args) >= 2:
-			if args [0] > 10 or args[1] > 1:
-				print "Warning Parameter Too High For Erdos Renyi", "Nodes %s" % args[0], "Interconnection Probability %s" % args[1]
-				print "Using Default Parameter"
-				args[0] = 5
-				args[1] = 0.8
-		else :
-			args[0] = 5
-			args[1] = 0.8
-		print "Erdos Renyi", "Nodes %s" % args[0], "Interconnection Probability %s" % args[1]
-		e_r(args[0], args[1])
-
-	print "Error NX Wrong Parameter"
-	sys.exit(-2) 
-
-def e_r(n, p):
-	g = nx.erdos_renyi_graph(n,p)
-	"Create An Erdos Reny Topo"
-	"Creating OSHI"
-
-	print "*** Test2"
-	testbed = TestbedOFELIA("ofelia_mapping.map", verbose=False)
-	print "*** Create Core Network"
-	oshis = []
-	for n in g.nodes():
-		n = n + 1
-		oshi = testbed.addOshi('osh%s' % (n))
-		oshis.append(oshi)
-
-	for (n1, n2) in g.edges():
-		n1 = n1 + 1
-		n2 = n2 + 1
-		lhs = ('osh%s' % n1)
-		rhs = ('osh%s' % n2)
-		l = testbed.addPPLink(lhs, rhs)
-		print "*** Connect", lhs, "To", rhs 
-
-	print "*** Create Controllers"
-	for i in range(1):
-		ctrl = testbed.addController("ctrl%s" % (i+1),"6633")
-		l = testbed.addPPLink(testbed.oshs[i].name, ctrl.name)
-		print "*** Connect", testbed.oshs[i].name, "To", ctrl.name
-		
-	print "*** Create Access Network"   
-	for i in range(n):
-		aoshi = testbed.addAoshi("aos%s" % (i+n+1))
-		l = testbed.addPPLink(testbed.oshs[i].name, aoshi.name)
-		print "*** Connect", testbed.oshs[i].name, "To", aoshi.name
-   
-	for i in range(n):
-		euh = testbed.addEuh("euh%s" % (i+1))
-		l = testbed.addPPLink(testbed.aoss[i].name, euh.name)
-		print "*** Connect", testbed.aoss[i].name, "To", euh.name
-
-	# We generate the topo's png
-	pos = nx.circular_layout(g)
-        nx.draw(g, pos)
-        plt.savefig("topo.png")
-
-	print "*** Configure Testbed"	
-	testbed.configure()
-	#TestbedCLI(testbed)	
-
 def parse_cmd_line():
 	parser = argparse.ArgumentParser(description='Mininet Deployer')
-	parser.add_argument('--topology', dest='topoInfo', action='store', default='topo1:3', help='Topology Info topo:param see readme for further details')
+	parser.add_argument('--topology', dest='topoInfo', action='store', default='topo:topo1.json', help='Topology Info topo:param see readme for further details')
 	args = parser.parse_args()	
 	if len(sys.argv)==1:
     		parser.print_help()
@@ -430,25 +316,21 @@ def parse_cmd_line():
 	return (data[0], data[1])
 
 def check_precondition():
-	if vll_path == "":
+	if vll_path == "" or parser_path == "":
 		print "Error Set Environment Variable At The Beginning Of File"
 		sys.exit(-2)
 
 if __name__ == '__main__':
 	check_precondition()
-	(topo, param) = parse_cmd_line()
-	if topo == 'topo1':
-		print "*** Create Core Mesh[%s] Network" % param
-		topo1(int(param))
-	elif topo == 'topo2':
-		print "*** Create Core Mesh[%s] Network And Simple Access" % param
-		topo2(int(param))
-	elif topo == 'topo3':
-		print "*** Create Topology Without Services From File:", param
-		topo3(param)
-	elif topo == 'topo4':
+	(topol, param) = parse_cmd_line()
+	if topol == 'topo':
 		print "*** Create Topology With Services From File:", param
-		topo4(param)
+		topo(param)
+	elif topol == "meshRouter":
+		print "*** Create Mesh Topology of Routers:", param
+		meshRouter(param)
+	elif topol == "simpleRouter":
+		print "*** Create Simple Topology of Routers:", param
+		simpleRouter(param)
 	else:
-		print "*** Create Topology From Networkx:", topo, param
-		buildTopoFromNx(topo, param)
+		print "*** Error Unknow Topology:", topo, param
