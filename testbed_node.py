@@ -31,7 +31,7 @@ from testbed_intf import *
 from testbed_deployer_utils import EndIP
 from testbed_deployer_utils import OSPFNetwork
 import sys
-import paramiko
+#import paramiko
 from subprocess import Popen
 
 #TODO Integration with psShell
