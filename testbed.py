@@ -24,7 +24,7 @@
 # @author Giuseppe Siracusano <a_siracusano@tin.it>
 # @author Stefano Salsano <stefano.salsano@uniroma2.it>
 #
-# XXX Depends On Luca Prete Script
+# XXX Depends On Dreamer-Setup-Script
 
 import sys
 from testbed_node import *
@@ -33,6 +33,29 @@ from testbed_deployer_utils import *
 from ingress_classification import *
 import copy
 import os
+
+class TestbedFactory(object):
+
+	def __init__(self, verbose):
+		self.verbose = verbose
+
+	def getTestbedOSHI(self, type_testbed, type_tunnel):
+		if type_testbed == "OFELIA":
+			return TestbedOSHIOFELIA(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+		elif type_testbed == "GOFF":
+			return TestbedOSHIGOFF(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+		else:
+			print "Testbed %s Not Supported...Exit" %(type_testbed)
+			sys.exit(-1)
+
+	def getTestbedRouter(self, type_testbed, type_tunnel):
+		if type_testbed == "OFELIA":
+			return TestbedRouterOFELIA(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+		elif type_testbed == "GOFF":
+			return TestbedRouterGOFF(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+		else:
+			print "Testbed %s Not Supported...Exit" %(type_testbed)
+			sys.exit(-1)
 
 class Testbed(object):
 
@@ -146,7 +169,7 @@ class TestbedRouter(Testbed):
 			net = ospfnet 
 		return net
 
-	def generateMGMTCfg(self):
+	def configureMGMT(self):
 		header =open('headerMGMT.txt','r')
 		management = open('management.sh','w')
 		lines = header.readlines()
@@ -279,6 +302,21 @@ class TestbedOSHI( Testbed ):
 				p_2 = ctrl_to_allocate[j].port
 				aos.setControllers([ip_1, ip_2], [p_1, p_2])
 				i = i + 1
+		else:
+			print "Warning No Controller Added - Information Will Not Be Generated"
+
+	def completeAllocation(self):
+		ips = []
+		ports = []
+		for ctrl in self.ctrls:
+			if len(ctrl.ips) > 0:
+				ips.append(ctrl.ips[0])
+				ports.append(ctrl.port)
+		if len(ips) > 0:
+			for osh in self.oshs:
+				osh.setControllers(ips, ports)
+			for aos in self.aoss:
+				aos.setControllers(ips, ports)
 		else:
 			print "Warning No Controller Added - Information Will Not Be Generated"
 		
@@ -416,7 +454,7 @@ class TestbedOSHI( Testbed ):
 		for aosh in self.aoss:
 			aosh.generateLMErules(self.coex)
 
-	def generateMGMTCfg(self):
+	def configureMGMT(self):
 		header =open('headerMGMT.txt','r')
 		management = open('management.sh','w')
 		lines = header.readlines()
@@ -439,13 +477,8 @@ class TestbedOSHI( Testbed ):
 		management.write(l2sw)
 		management.write(machine)
 
-	def generateVLLCfg(self, path):
-		dbpath = path + "vlls.json"
-		if(os.path.exists(dbpath)):
-			if self.verbose:			
-				print "*** Remove Vlls DB File"
-			os.remove(path + "vlls.json")
-		cfg = open(path + 'vll_pusher.cfg','w')
+	def generateVLLCfg(self):
+		cfg = open('vll_pusher.cfg','w')
 		for line in self.vllcfgline:
 			cfg.write(line)
 		cfg.close()
@@ -509,7 +542,7 @@ class TestbedOSHIGOFF( TestbedOSHI ):
 
 	
 	def configure(self):
-		self.roundrobinallocation()
+		self.completeAllocation()
 		header =open('header.txt','r')
 		testbed = open('testbed.sh','w')
 		lines = header.readlines()
@@ -598,7 +631,7 @@ class TestbedOSHIOFELIA( TestbedOSHI ):
 		self.tunneling = tunneling
 	
 	def configure(self):
-		self.roundrobinallocation()
+		self.completeAllocation()
 		header =open('header.txt','r')
 		testbed = open('testbed.sh','w')
 		lines = header.readlines()

@@ -1,1 +1,265 @@
- {"vertices":["COSHI#01","COSHI#02","AOSHI#03","AOSHI#04","L2SW#05","L2SW#06","EUH#07","EUH#08"],"edges":[["AOSHI#04","COSHI#02",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["AOSHI#04","COSHI#01",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["AOSHI#03","COSHI#02",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["AOSHI#03","COSHI#01",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["COSHI#01","COSHI#02",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["EUH#08","L2SW#05",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["L2SW#05","AOSHI#04",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["EUH#07","L2SW#06",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}],["L2SW#06","AOSHI#03",{"labe_to_node1":"","labe_to_node2":"","edge_label":""}]],"pos":{"COSHI#01":[319,181.39999389648438],"COSHI#02":[457,180.39999389648438],"AOSHI#03":[257,305.3999938964844],"AOSHI#04":[511,310.3999938964844],"L2SW#05":[521,381.3999938964844],"L2SW#06":[257,375.3999938964844],"EUH#07":[252,448.3999938964844],"EUH#08":[517,461.3999938964844]},"node_properties":{"COSHI#01":{"frozen":false,"loopback":""},"COSHI#02":{"frozen":false,"loopback":""},"AOSHI#03":{"frozen":false,"loopback":""},"AOSHI#04":{"frozen":false,"loopback":""},"L2SW#05":{"frozen":false,"loopback":""},"L2SW#06":{"frozen":false,"loopback":""},"EUH#07":{"frozen":false,"loopback":""},"EUH#08":{"frozen":false,"loopback":""}},"name":"G"}
+{
+	"vertices": [
+		"COSHI#01",
+		"COSHI#02",
+		"AOSHI#03",
+		"AOSHI#04",
+		"AOSHI#05",
+		"EUH#06",
+		"EUH#07",
+		"EUH#08",
+		"COSHI#09"
+	],
+	"edges": [
+		[
+			"AOSHI#03",
+			"COSHI#01",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#01",
+			"AOSHI#04",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#01",
+			"COSHI#02",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#02",
+			"AOSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"AOSHI#04",
+			"COSHI#02",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"AOSHI#05",
+			"COSHI#01",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"AOSHI#05",
+			"COSHI#02",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"EUH#07",
+			"AOSHI#04",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"EUH#06",
+			"AOSHI#05",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"EUH#08",
+			"AOSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#01",
+			"COSHI#09",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#09",
+			"AOSHI#05",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#09",
+			"AOSHI#04",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"COSHI#09",
+			"AOSHI#03",
+			[
+				{
+					"edge_label": "",
+					"vll": false
+				}
+			]
+		],
+		[
+			"EUH#07",
+			"EUH#08",
+			[
+				{
+					"edge_label": "",
+					"vll": true
+				}
+			]
+		],
+		[
+			"EUH#07",
+			"EUH#06",
+			[
+				{
+					"edge_label": "",
+					"vll": true
+				}
+			]
+		],
+		[
+			"EUH#06",
+			"EUH#08",
+			[
+				{
+					"edge_label": "",
+					"vll": true
+				}
+			]
+		]
+	],
+	"pos": {
+		"COSHI#01": [
+			376,
+			139
+		],
+		"COSHI#02": [
+			611,
+			23
+		],
+		"AOSHI#03": [
+			688,
+			138
+		],
+		"AOSHI#04": [
+			341,
+			53
+		],
+		"AOSHI#05": [
+			528,
+			291
+		],
+		"EUH#06": [
+			539,
+			370
+		],
+		"EUH#07": [
+			239,
+			57
+		],
+		"EUH#08": [
+			753,
+			187
+		],
+		"COSHI#09": [
+			175,
+			240
+		]
+	},
+	"node_properties": {
+		"COSHI#01": {
+			"frozen": false,
+			"loopback": "172.168.0.2"
+		},
+		"COSHI#02": {
+			"frozen": false,
+			"loopback": "172.168.0.3"
+		},
+		"AOSHI#03": {
+			"frozen": false,
+			"loopback": "172.168.0.6"
+		},
+		"AOSHI#04": {
+			"frozen": false,
+			"loopback": "172.168.0.4"
+		},
+		"AOSHI#05": {
+			"frozen": false,
+			"loopback": "172.168.0.5"
+		},
+		"EUH#06": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"EUH#07": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"EUH#08": {
+			"frozen": false,
+			"loopback": ""
+		},
+		"COSHI#09": {
+			"frozen": false,
+			"loopback": "172.168.0.1"
+		}
+	},
+	"advanced": {
+		"tunneling": "VXLAN"
+	},
+	"name": "G"
+}

@@ -10,17 +10,5 @@
 #
 # PLEASE, DO NOT USE WHITE SPACES
 #
-# DSH_GROUPS are the active groups in the topology, for example OSHI, EUH, etc.
-#
-# OSHI are the management IPs of the active machine in the OSHI group
-#
-# EUH are the the management IPs of the active machine in the EUH group
-#
-# CTRL are the management IPs of the active machine in the CTRL group
-#
-# L2SW are the management IPs of the active machine in the L2SW group
-#
-# ROUTER are the management IPs of the active machine in the ROUTER group
-#
-# NODE_LIST are the management IPs of the all active machine 
+# DSH groups of machine, each line is a group of machines
 ################################################################ ISTRUCTIONS END ###############################################################

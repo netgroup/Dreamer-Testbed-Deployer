@@ -24,7 +24,7 @@
 # @author Giuseppe Siracusano <a_siracusano@tin.it>
 # @author Stefano Salsano <stefano.salsano@uniroma2.it>
 #
-# XXX Depends On Luca Prete Script
+# XXX Depends Dreamer-Setup-Script
 
 import os
 import json

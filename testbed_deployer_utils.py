@@ -24,7 +24,7 @@
 # @author Giuseppe Siracusano <a_siracusano@tin.it>
 # @author Stefano Salsano <stefano.salsano@uniroma2.it>
 #
-# XXX Depends On Luca Prete Script
+# XXX Depends On Dreamer-Setup-Script
 
 from netaddr import *
 from ipaddress import *
