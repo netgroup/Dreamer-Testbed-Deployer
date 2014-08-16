@@ -10,9 +10,7 @@
 #
 # PLEASE, DO NOT USE WHITE SPACES
 #
-# Insert here your bootstrap rules, that you want to be pushed by LME
-#
-# Each line is an Open vSwitch rule 
+# LME bootstrap rules, each line is an Open vSwitch rule 
 ################################################################ ISTRUCTIONS END ###############################################################
 # 62.40.110.49 - start
 # COEXB - start
