@@ -44,65 +44,65 @@ def meshOSHI(param, testbed):
 	generator = PropertiesGenerator(testbed)
 	
 	if verbose:
-		print "*** Create OSHI"
-	oshis_n = ["osh%s" % (x + 1) for x in range(int(param))]
+		print "*** Create CR OSHI"
+	cr_oshis_n = ["cro%s" % (x + 1) for x in range(int(param))]
 	if verbose:
-		print "*** Create AOSHI"
-	aoshis_n = ["aos%s" % (x + 1) for x in range(int(param))]
+		print "*** Create PE OSHI"
+	pe_oshis_n = ["peo%s" % (x + 1) for x in range(int(param))]
 	if verbose:
-		print "*** Create Hosts"
-	euhs_n = ["euh%s" % (x + 1) for x in range(int(param))]
+		print "*** Create CER"
+	cers_n = ["cer%s" % (x + 1) for x in range(int(param))]
 	if verbose:
 		print "*** Build Vertices Properties"
-	oshis_properties = generator.getVerticesProperties(oshis_n)
-	aoshis_properties = generator.getVerticesProperties(aoshis_n)
+	cr_oshis_properties = generator.getVerticesProperties(cr_oshis_n)
+	pe_oshis_properties = generator.getVerticesProperties(pe_oshis_n)
 
-	vlls = [(euhs_n[0], euhs_n[len(euhs_n)-1])]
+	vlls = [(cers_n[0], cers_n[len(cers_n)-1])]
 
-	print "*** Mesh With", param, "OSHI", param, "AOSHI", param, "EUH"
-	factory = TestbedFactory(verbose)
+	print "*** Mesh With", param, "CR OSHI", param, "PE OSHI", param, "CER"
+	factory = TestbedFactory(False)
 	testbed = factory.getTestbedOSHI(testbed, tunneling)	
 	
-	oshis = []
+	cr_oshis = []
 	for i in range(int(param)):
-		oshi = testbed.addOshi(oshis_n[i], oshis_properties[i])
-		for rhs in oshis:
-			linkproperty = generator.getLinksProperties([(oshi.name, rhs.name)])
-			testbed.addLink(oshi.name, rhs.name, linkproperty[0])
+		croshi = testbed.addCrOshi(cr_oshis_properties[i], cr_oshis_n[i])
+		for rhs in cr_oshis:
+			linkproperty = generator.getLinksProperties([(croshi.name, rhs.name)])
+			testbed.addLink(croshi.name, rhs.name, linkproperty[0])
 			if verbose:			
-				print "*** Connect", oshi.name, "To", rhs.name
+				print "*** Connect", croshi.name, "To", rhs.name
 				print "*** Link Properties", linkproperty[0]
-		oshis.append(oshi)
+		cr_oshis.append(croshi)
 
 	if verbose:
 		print "*** Build CONTROLLER"
-	ctrl = testbed.addController("ctrl1", 6633)	
-	coex = CoexB()
-	testbed.addCoexistenceMechanism(coex)
-	linkproperties = generator.getLinksProperties([(oshi.name, ctrl.name)])
-	[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(oshi.name, ctrl.name, linkproperties[0])
-	ingress = IngrB(coex, lhs_tap, lhs_vi)
-	testbed.addIngressClassification(ctrl.name, oshi.name, ingress)
+	ctrl = testbed.addController(6633, "ctr1")	
+	testbed.addCoexistenceMechanism("COEXB", 0)
+	linkproperties = generator.getLinksProperties([(croshi.name, ctrl.name)])
+	linkproperties[0].ingr.type = "INGRB"
+	linkproperties[0].ingr.data = None
+	[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(croshi.name, ctrl.name, linkproperties[0])
+	
 	if verbose:			
-		print "*** Connect", ctrl.name, "To", oshi.name
+		print "*** Connect", ctrl.name, "To", croshi.name
 
-	aoshs = []
+	pe_oshis = []
 	for i in range(int(param)):
-		aoshi = testbed.addAoshi(aoshis_n[i], aoshis_properties[i])
-		linkproperty = generator.getLinksProperties([(aoshi.name, oshis[i].name)])
-		testbed.addLink(aoshi.name, oshis[i].name, linkproperty[0])
+		peoshi = testbed.addPeOshi(pe_oshis_properties[i], pe_oshis_n[i])
+		linkproperty = generator.getLinksProperties([(peoshi.name, cr_oshis[i].name)])
+		testbed.addLink(peoshi.name, cr_oshis[i].name, linkproperty[0])
 		if verbose:			
-			print "*** Connect", aoshi.name, "To", oshis[i].name
+			print "*** Connect", peoshi.name, "To", cr_oshis[i].name
 			print "*** Link Properties", linkproperty[0]
-		aoshs.append(aoshi)
+		pe_oshis.append(peoshi)
 
-	euhs = []
+	cers = []
 	for i in range(int(param)):
-		euh = testbed.addEuh(euhs_n[i])
-		linkproperty = generator.getLinksProperties([(euh.name, aoshs[i].name)])
-		testbed.addLink(euh.name, aoshs[i].name, linkproperty[0])
+		cer = testbed.addCer(cers_n[i])
+		linkproperty = generator.getLinksProperties([(cer.name, pe_oshis[i].name)])
+		testbed.addLink(cer.name, pe_oshis[i].name, linkproperty[0])
 		if verbose:			
-			print "*** Connect", euh.name, "To", aoshs[i].name
+			print "*** Connect", cer.name, "To", pe_oshis[i].name
 			print "*** Link Properties", linkproperty[0]
 
 	if verbose:
@@ -150,12 +150,12 @@ def meshRouter(param, testbed):
 		routers_properties = generator.getVerticesProperties(routers_n)
 
 	print "*** Mesh With", param, "Router"
-	factory = TestbedFactory(verbose)
+	factory = TestbedFactory(False)
 	testbed = factory.getTestbedRouter(testbed, tunneling)	
 	
 	routers = []
 	for i in range(int(param)):
-		router = testbed.addRouter(routers_n[i], routers_properties[i])
+		router = testbed.addRouter(routers_properties[i], routers_n[i])
 		for rhs in routers:
 			linkproperty = generator.getLinksProperties([(router.name, rhs.name)])
 			testbed.addLink(router.name, rhs.name, linkproperty[0])
@@ -186,5 +186,5 @@ def meshRouter(param, testbed):
 
 
 if __name__ == '__main__':
-	meshRouter(3, "OFELIA")
-	#meshOSHI(3, "GOFF")
+	meshRouter(3, "GOFF")
+	#meshOSHI(3, "OFELIA")

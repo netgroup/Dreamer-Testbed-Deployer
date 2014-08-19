@@ -1,18 +1,18 @@
 {
 	"vertices": [
-		"COSHI#01",
-		"COSHI#02",
-		"AOSHI#03",
-		"AOSHI#04",
-		"L2SW#05",
-		"L2SW#06",
-		"EUH#07",
-		"EUH#08"
+		"CROSHI#01",
+		"CROSHI#02",
+		"PEOSHI#03",
+		"PEOSHI#04",
+		"SWI#05",
+		"SWI#06",
+		"CER#07",
+		"CER#08"
 	],
 	"edges": [
 		[
-			"AOSHI#04",
-			"COSHI#02",
+			"PEOSHI#04",
+			"CROSHI#02",
 			[
 				{
 					"edge_label": "",
@@ -21,8 +21,8 @@
 			]
 		],
 		[
-			"COSHI#01",
-			"AOSHI#03",
+			"CROSHI#01",
+			"PEOSHI#03",
 			[
 				{
 					"edge_label": "",
@@ -31,8 +31,8 @@
 			]
 		],
 		[
-			"L2SW#05",
-			"L2SW#06",
+			"SWI#05",
+			"SWI#06",
 			[
 				{
 					"edge_label": "",
@@ -41,8 +41,8 @@
 			]
 		],
 		[
-			"COSHI#01",
-			"L2SW#06",
+			"CROSHI#01",
+			"SWI#06",
 			[
 				{
 					"edge_label": "",
@@ -55,8 +55,8 @@
 			]
 		],
 		[
-			"COSHI#01",
-			"L2SW#05",
+			"CROSHI#01",
+			"SWI#05",
 			[
 				{
 					"edge_label": "",
@@ -65,8 +65,8 @@
 			]
 		],
 		[
-			"COSHI#02",
-			"L2SW#06",
+			"CROSHI#02",
+			"SWI#06",
 			[
 				{
 					"edge_label": "",
@@ -75,8 +75,8 @@
 			]
 		],
 		[
-			"COSHI#02",
-			"L2SW#05",
+			"CROSHI#02",
+			"SWI#05",
 			[
 				{
 					"edge_label": "",
@@ -85,8 +85,8 @@
 			]
 		],
 		[
-			"AOSHI#04",
-			"EUH#08",
+			"PEOSHI#04",
+			"CER#08",
 			[
 				{
 					"edge_label": "",
@@ -95,8 +95,8 @@
 			]
 		],
 		[
-			"AOSHI#03",
-			"EUH#07",
+			"PEOSHI#03",
+			"CER#07",
 			[
 				{
 					"edge_label": "",
@@ -106,69 +106,69 @@
 		]
 	],
 	"pos": {
-		"COSHI#01": [
+		"CROSHI#01": [
 			291.26668978571337,
 			251.93631511846587
 		],
-		"COSHI#02": [
+		"CROSHI#02": [
 			502.6814099089617,
 			252.26528418458514
 		],
-		"AOSHI#03": [
+		"PEOSHI#03": [
 			180.3905817289152,
 			192.1258824319983
 		],
-		"AOSHI#04": [
+		"PEOSHI#04": [
 			615.929281306273,
 			196.93132766991542
 		],
-		"L2SW#05": [
+		"SWI#05": [
 			396.8097590468144,
 			303.78204853804834
 		],
-		"L2SW#06": [
+		"SWI#06": [
 			397.24512106521,
 			214.20239429213964
 		],
-		"EUH#07": [
+		"CER#07": [
 			183.2417244137341,
 			86.81615260506902
 		],
-		"EUH#08": [
+		"CER#08": [
 			629.188040852542,
 			92.76483764494336
 		]
 	},
 	"node_properties": {
-		"COSHI#01": {
+		"CROSHI#01": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"COSHI#02": {
+		"CROSHI#02": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"AOSHI#03": {
+		"PEOSHI#03": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"AOSHI#04": {
+		"PEOSHI#04": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"L2SW#05": {
+		"SWI#05": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"L2SW#06": {
+		"SWI#06": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"EUH#07": {
+		"CER#07": {
 			"frozen": false,
 			"loopback": ""
 		},
-		"EUH#08": {
+		"CER#08": {
 			"frozen": false,
 			"loopback": ""
 		}

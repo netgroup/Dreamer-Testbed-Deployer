@@ -42,8 +42,7 @@ class MappingParser(object):
 		self.vlan = None
 		self.user = None
 		self.pwd = None
-		self.euhs = []
-		self.l2sws = []
+		
 		path_json = "%s%s" % (self.base_path, path_json)
 		if self.verbose:
 			print "*** MappingParser.__init__:"
@@ -80,7 +79,20 @@ class MappingParser(object):
 			print "*** Error No Vlan Data"
 			sys.exit(-2)
 		self.vlan = self.json_data['vlan']
-		
+
+class MappingParserRouterTestbed(MappingParser):
+
+	# Init Function, load json_data from path_json
+	def __init__(self, path_json="goff_mapping.map", verbose=False):
+		MappingParser.__init__(self, path_json, verbose)
+		self.routers = []
+		self.euhs = []
+		self.l2sws = []
+		if self.verbose:
+			print "*** MappingParserGOFF.__init__:"
+
+	def load_info(self):
+		MappingParser.load_info(self)
 		if self.verbose:
 			print "*** Retrieve Nodes"
 		if 'euh' in self.json_data:
@@ -91,27 +103,6 @@ class MappingParser(object):
 			l2swos = self.json_data['l2sw']
 			for l2sw in l2swos:
 				self.l2sws.append(NODInfo(l2sw[0], l2sw[1]))
-
-		if self.verbose:		
-			print "*** EUH:"
-			for euh in self.euhs:
-				print "*** Name %s - Mgt IP %s - Intfs %s" %(euh.name, euh.mgt_ip, euh.intfs)
-		if self.verbose:		
-			print "*** L2SW:"
-			for l2sw in self.l2sws:
-				print "*** Name %s - Mgt IP %s - Intfs %s" %(l2sw.name, l2sw.mgt_ip, l2sw.intfs)
-
-class MappingParserRouterTestbed(MappingParser):
-
-	# Init Function, load json_data from path_json
-	def __init__(self, path_json="goff_mapping.map", verbose=False):
-		MappingParser.__init__(self, path_json, verbose)
-		self.routers = []
-		if self.verbose:
-			print "*** MappingParserGOFF.__init__:"
-
-	def load_info(self):
-		MappingParser.load_info(self)
 		if 'router' in self.json_data:
 			routers = self.json_data['router']
 			for router in routers:
@@ -121,6 +112,15 @@ class MappingParserRouterTestbed(MappingParser):
 			print "*** Router:"
 			for router in self.routers:
 				print "*** Name %s - Mgt IP %s - Intfs %s" %(router.name, router.mgt_ip, router.intfs)
+		if self.verbose:		
+			print "*** EUH:"
+			for euh in self.euhs:
+				print "*** Name %s - Mgt IP %s - Intfs %s" %(euh.name, euh.mgt_ip, euh.intfs)
+		if self.verbose:		
+			print "*** L2SW:"
+			for l2sw in self.l2sws:
+				print "*** Name %s - Mgt IP %s - Intfs %s" %(l2sw.name, l2sw.mgt_ip, l2sw.intfs)
+		
 
 	def getNodesInfo(self):
 		self.parse_data()
@@ -133,41 +133,49 @@ class MappingParserOSHITestbed(MappingParser):
 	# Init Function, load json_data from path_json
 	def __init__(self, path_json="goff_mapping.map", verbose=False):
 		MappingParser.__init__(self, path_json, verbose)
-		self.oshis = []
-		self.aoshis = []
+		self.cr_oshis = []
+		self.pe_oshis = []
 		self.ctrls = []
+		self.cers = []
 		if self.verbose:
 			print "*** MappingParserOSHI.__init__:"
 
 	def load_info(self):
 		MappingParser.load_info(self)
 		if 'core' in self.json_data:
-			oshies = self.json_data['core']
-			for oshi in oshies:
-				self.oshis.append(NODInfo(oshi[0], oshi[1]))
+			cr_oshies = self.json_data['core']
+			for cr_oshi in cr_oshies:
+				self.cr_oshis.append(NODInfo(cr_oshi[0], cr_oshi[1]))
 		if 'access' in self.json_data:
-			aoshies = self.json_data['access']
-			for aoshi in aoshies:
-				self.aoshis.append(NODInfo(aoshi[0], aoshi[1]))
+			pe_oshies = self.json_data['access']
+			for pe_oshi in pe_oshies:
+				self.pe_oshis.append(NODInfo(pe_oshi[0], pe_oshi[1]))
 		if 'ctrl' in self.json_data:
 			controllers = self.json_data['ctrl']
 			for controller in controllers:
 				self.ctrls.append(NODInfo(controller[0], controller[1]))
+		if 'cer' in self.json_data:
+			customers = self.json_data['cer']
+			for customer in customers:
+				self.cers.append(NODInfo(customer[0], customer[1]))
 
 		if self.verbose:		
-			print "*** OSHI:"
-			for osh in self.oshis:
-				print "*** Name %s - Mgt IP %s - Intfs %s" %(osh.name, osh.mgt_ip, osh.intfs)
-			print "*** AOSHI:"
-			for aos in self.aoshis:
-				print "*** Name %s - Mgt IP %s - Intfs %s" %(aos.name, aos.mgt_ip, aos.intfs)
-			print "*** CONTROLLER:"
+			print "*** Core OSHI:"
+			for cr_osh in self.cr_oshis:
+				print "*** Name %s - Mgt IP %s - Intfs %s" %(cr_osh.name, cr_osh.mgt_ip, cr_osh.intfs)
+			print "*** Provider Edge OSHI:"
+			for pe_osh in self.pe_oshis:
+				print "*** Name %s - Mgt IP %s - Intfs %s" %(pe_osh.name, pe_osh.mgt_ip, pe_osh.intfs)
+			print "*** Controller:"
 			for ctrl in self.ctrls:
 				print "*** Name %s - Mgt IP %s - Intfs %s" %(ctrl.name, ctrl.mgt_ip, ctrl.intfs)
+			print "*** Customer Edge Router:"
+			for customer in self.cers:
+				print "*** Name %s - Mgt IP %s - Intfs %s" %(customer.name, customer.mgt_ip, customer.intfs)
 
 	def getNodesInfo(self):
 		self.parse_data()
-		return (self.oshis, self.aoshis, self.l2sws, self.ctrls, self.euhs)
+		return (self.cr_oshis, self.pe_oshis, self.ctrls, self.cers)
 
 		
 

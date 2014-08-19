@@ -26,24 +26,85 @@
 #
 # XXX Depends On Dreamer-Setup-Script
 
+import sys
+
 class IngressClassification (object):
 	
-	def __init__(self, typeof):
+	prio_std_rules = 300
+	
+	def __init__(self, eth, vi, name, typeof):
+		self.eth = eth
+		self.vi = vi
+		self.name = name
 		self.type = typeof
 
-class IngrB(IngressClassification):
-	
-	def __init__(self, coex, tapintf, viintf):		
-		IngressClassification.__init__(self, "INGRB")	
-		self.coex = coex
-		self.tapintf = tapintf
-		self.viintf = viintf
+class IngrB_CoexA(IngressClassification):
 
+	tableIP =1
+
+	def __init__(self, eth, vi, coexData, name):
+		IngressClassification.__init__(self, eth, vi, name, "INGRB")
+		self.vlanIP = coexData
+	
 	def serialize(self):
-		ret = ""
-		if self.coex.type == "COEXA":
-			ret = "ovs-ofctl add-flow br-dreamer \"table=0,hard_timeout=0,priority=300,in_port=%s,actions=mod_vlan_vid:%s,resubmit(,1)\"" %(self.tapintf.name, self.coex.value)
-			ret = ret + "\n"
-			ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=300,in_port=%s,actions=strip_vlan,output:%s\"" % (self.viintf.name, self.tapintf.name)
-			ret =  ret + "\n"
-		return ret
+
+		rules = ""
+		
+		rules = rules + 'ovs-ofctl add-flow %s "table=0,hard_timeout=0,priority=%s,in_port=%s,actions=mod_vlan_vid:%s,resubmit(,%s)"\n' %(self.name, 
+		self.prio_std_rules, self.eth, self.vlanIP, self.tableIP)
+		rules = rules + 'ovs-ofctl add-flow %s "table=%s,hard_timeout=0,priority=%s,in_port=%s,actions=strip_vlan,output:%s"\n' %(self.name, 
+		self.tableIP, self.prio_std_rules, self.vi, self.eth)
+
+		return rules
+
+class IngrB_CoexA_13(IngrB_CoexA):
+
+	def __init__(self, eth, vi, coexData, name):
+		IngrB_CoexA.__init__(self, eth, vi, coexData, name)
+	
+	def serialize(self):
+
+		rules = ""
+		
+		rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,in_port=%s,actions=mod_vlan_vid:%s,goto_table:%s"\n' %(self.name, self.prio_std_rules, self.eth, self.vlanIP, self.tableIP)
+		rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=%s,hard_timeout=0,priority=%s,in_port=%s,actions=strip_vlan,output:%s"\n' %(self.name, self.tableIP, self.prio_std_rules, self.vi, self.eth)
+
+		return rules		
+
+class IngrB_CoexB(IngressClassification):
+
+	def __init__(self, eth, vi, name):
+		IngressClassification.__init__(self, eth, vi, name, "INGRB")
+	
+	def serialize(self):
+
+		rules = ""
+
+		return rules
+
+class IngressFactory(object):
+
+	coex_types=["COEXA", "COEXB"]
+	ingress_types=["INGRB"]
+
+	def getIngr(self, coex_type, coex_data, ingress_type, ingress_data, eth, vi, name, OF_V):
+
+		eth = eth.name
+		vi = vi.name
+
+		if coex_type not in self.coex_types:
+			print("ERROR %s not supported" % coex_type)
+			sys.exit(-2)
+
+		if ingress_type not in self.ingress_types:
+			print("ERROR %s not supported" % ingress_type)
+			sys.exit(-2)
+		
+		if coex_type == "COEXA" and ingress_type == "INGRB":
+			if OF_V == None:
+				return IngrB_CoexA(eth, vi, coex_data, name)
+			elif OF_V == "OpenFlow13":
+				return IngrB_CoexA_13(eth, vi, coex_data, name)
+
+		if coex_type == "COEXB" and ingress_type == "INGRB":
+			return IngrB_CoexB(eth, vi, name)

@@ -12,97 +12,313 @@
 # Configuration options, each line is a configuration option used by config script
 ################################################################ ISTRUCTIONS END ###############################################################
 # general configuration - start
-TESTBED=OFELIA
-TUNNELING=OpenVPN
-declare -a MGMTNET=(10.216.0.0 255.255.0.0 10.216.32.1 eth0)
+TESTBED=GOFF
+TUNNELING=VXLAN
+declare -a COEX=(COEXA 1)
 # general configuration - end
-# 10.216.33.175 - start
-HOST=rou1
+# 62.40.110.49 - start
+HOST=cro1
 ROUTERPWD=dreamer
-SLICEVLAN=199
+DPID=00000000AC100001
+SLICEVLAN=700
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1 CTRL2)
+declare -a CTRL1=(10.0.17.2 6633)
+declare -a CTRL2=(10.0.18.2 6633)
 declare -a LOOPBACK=(172.16.0.1/32 1 1)
 declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.1 255.255.0.0)
-declare -a TAP=(tap1 tap2 tap3)
-declare -a tap1=(1191 1191 10.0.0.2/24 1 1 endip1)
-declare -a tap2=(1192 1191 10.0.1.2/24 1 1 endip2)
-declare -a tap3=(1193 1191 10.0.3.2/24 1 1 endip3)
-declare -a endip1=(192.168.1.2 eth1)
-declare -a endip2=(192.168.1.3 eth1)
-declare -a endip3=(192.168.1.4 eth1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4)
+declare -a TAP=(tap1 tap2 tap3 tap4 tap5 tap6)
+declare -a tap1=(2 endip1)
+declare -a tap2=(3 endip2)
+declare -a tap3=(4 endip3)
+declare -a tap4=(5 endip4)
+declare -a tap5=(8 endip5)
+declare -a tap6=(13 endip6)
+declare -a endip1=(192.168.1.8 eth1)
+declare -a endip2=(192.168.1.4 eth1)
+declare -a endip3=(192.168.1.5 eth1)
+declare -a endip4=(192.168.1.2 eth1)
+declare -a endip5=(192.168.1.6 eth1)
+declare -a endip6=(192.168.1.3 eth1)
+declare -a VI=(vi1 vi2 vi3 vi4 vi5 vi6)
+declare -a vi1=(10.0.18.1/24 1 5)
+declare -a vi2=(10.0.0.2/24 1 5)
+declare -a vi3=(10.0.1.1/24 1 5)
+declare -a vi4=(10.0.2.1/24 1 5)
+declare -a vi5=(10.0.5.2/24 1 5)
+declare -a vi6=(10.0.10.1/24 1 5)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5 NET6 NET7)
 declare -a NET1=(172.16.0.1/32 0.0.0.0)
-declare -a NET2=(10.0.0.0/24 0.0.0.0)
-declare -a NET3=(10.0.1.0/24 0.0.0.0)
-declare -a NET4=(10.0.3.0/24 0.0.0.0)
-# 10.216.33.175 - end
-# 10.216.33.176 - start
-HOST=rou2
+declare -a NET2=(10.0.18.0/24 0.0.0.0)
+declare -a NET3=(10.0.0.0/24 0.0.0.0)
+declare -a NET4=(10.0.1.0/24 0.0.0.0)
+declare -a NET5=(10.0.2.0/24 0.0.0.0)
+declare -a NET6=(10.0.5.0/24 0.0.0.0)
+declare -a NET7=(10.0.10.0/24 0.0.0.0)
+# 62.40.110.49 - end
+# 62.40.110.16 - start
+HOST=cro2
 ROUTERPWD=dreamer
-SLICEVLAN=199
+DPID=00000000AC100002
+SLICEVLAN=700
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1 CTRL2)
+declare -a CTRL1=(10.0.17.2 6633)
+declare -a CTRL2=(10.0.18.2 6633)
 declare -a LOOPBACK=(172.16.0.2/32 1 1)
 declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.2 255.255.0.0)
-declare -a TAP=(tap1 tap2 tap3)
-declare -a tap1=(1191 1191 10.0.0.1/24 1 1 endip1)
-declare -a tap2=(1192 1192 10.0.2.2/24 1 1 endip2)
-declare -a tap3=(1193 1191 10.0.4.2/24 1 1 endip3)
+declare -a TAP=(tap1 tap2 tap3 tap4)
+declare -a tap1=(5 endip1)
+declare -a tap2=(6 endip2)
+declare -a tap3=(7 endip3)
+declare -a tap4=(9 endip4)
 declare -a endip1=(192.168.1.1 eth1)
-declare -a endip2=(192.168.1.3 eth1)
+declare -a endip2=(192.168.1.4 eth1)
 declare -a endip3=(192.168.1.5 eth1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4)
+declare -a endip4=(192.168.1.6 eth1)
+declare -a VI=(vi1 vi2 vi3 vi4)
+declare -a vi1=(10.0.2.2/24 1 5)
+declare -a vi2=(10.0.3.1/24 1 5)
+declare -a vi3=(10.0.4.2/24 1 5)
+declare -a vi4=(10.0.6.2/24 1 5)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
 declare -a NET1=(172.16.0.2/32 0.0.0.0)
-declare -a NET2=(10.0.0.0/24 0.0.0.0)
-declare -a NET3=(10.0.2.0/24 0.0.0.0)
+declare -a NET2=(10.0.2.0/24 0.0.0.0)
+declare -a NET3=(10.0.3.0/24 0.0.0.0)
 declare -a NET4=(10.0.4.0/24 0.0.0.0)
-# 10.216.33.176 - end
-# 10.216.33.177 - start
-HOST=rou3
+declare -a NET5=(10.0.6.0/24 0.0.0.0)
+# 62.40.110.16 - end
+# 62.40.110.149 - start
+HOST=cro6
 ROUTERPWD=dreamer
-SLICEVLAN=199
+DPID=00000000AC100003
+SLICEVLAN=700
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1 CTRL2)
+declare -a CTRL1=(10.0.17.2 6633)
+declare -a CTRL2=(10.0.18.2 6633)
 declare -a LOOPBACK=(172.16.0.3/32 1 1)
 declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.3 255.255.0.0)
-declare -a TAP=(tap1 tap2 tap3)
-declare -a tap1=(1191 1192 10.0.1.1/24 1 1 endip1)
-declare -a tap2=(1192 1192 10.0.2.1/24 1 1 endip2)
-declare -a tap3=(1193 1191 10.0.5.2/24 1 1 endip3)
-declare -a endip1=(192.168.1.1 eth1)
-declare -a endip2=(192.168.1.2 eth1)
+declare -a TAP=(tap1 tap2 tap3 tap4 tap5)
+declare -a tap1=(1 endip1)
+declare -a tap2=(13 endip2)
+declare -a tap3=(14 endip3)
+declare -a tap4=(15 endip4)
+declare -a tap5=(16 endip5)
+declare -a endip1=(192.168.1.7 eth1)
+declare -a endip2=(192.168.1.1 eth1)
 declare -a endip3=(192.168.1.6 eth1)
-declare -a OSPFNET=(NET1 NET2 NET3 NET4)
+declare -a endip4=(192.168.1.5 eth1)
+declare -a endip5=(192.168.1.4 eth1)
+declare -a VI=(vi1 vi2 vi3 vi4 vi5)
+declare -a vi1=(10.0.17.1/24 1 5)
+declare -a vi2=(10.0.10.2/24 1 5)
+declare -a vi3=(10.0.11.1/24 1 5)
+declare -a vi4=(10.0.12.1/24 1 5)
+declare -a vi5=(10.0.13.1/24 1 5)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5 NET6)
 declare -a NET1=(172.16.0.3/32 0.0.0.0)
-declare -a NET2=(10.0.1.0/24 0.0.0.0)
-declare -a NET3=(10.0.2.0/24 0.0.0.0)
-declare -a NET4=(10.0.5.0/24 0.0.0.0)
-# 10.216.33.177 - end
-# 10.216.33.179 - start
-HOST=euh4
-SLICEVLAN=199
+declare -a NET2=(10.0.17.0/24 0.0.0.0)
+declare -a NET3=(10.0.10.0/24 0.0.0.0)
+declare -a NET4=(10.0.11.0/24 0.0.0.0)
+declare -a NET5=(10.0.12.0/24 0.0.0.0)
+declare -a NET6=(10.0.13.0/24 0.0.0.0)
+# 62.40.110.149 - end
+# 62.40.110.45 - start
+HOST=peo3
+ROUTERPWD=dreamer
+DPID=00000000AC100004
+SLICEVLAN=700
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1 CTRL2)
+declare -a CTRL1=(10.0.17.2 6633)
+declare -a CTRL2=(10.0.18.2 6633)
+declare -a LOOPBACK=(172.16.0.4/32 1 1)
 declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.4 255.255.0.0)
-declare -a TAP=(tap1)
-declare -a tap1=(1191 1193 10.0.3.1/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.3.2 tap1)
-declare -a ENDIP1=(192.168.1.1 eth1)
-# 10.216.33.179 - end
-# 10.216.33.180 - start
-HOST=euh5
-SLICEVLAN=199
+declare -a TAP=(tap1 tap2 tap3 tap4 tap5 tap6)
+declare -a tap1=(3 endip1)
+declare -a tap2=(6 endip2)
+declare -a tap3=(12 endip3)
+declare -a tap4=(16 endip4)
+declare -a tap5=(18 endip5)
+declare -a tap6=(22 endip6)
+declare -a endip1=(192.168.1.1 eth1)
+declare -a endip2=(192.168.1.2 eth1)
+declare -a endip3=(192.168.1.11 eth1)
+declare -a endip4=(192.168.1.3 eth1)
+declare -a endip5=(192.168.1.11 eth1)
+declare -a endip6=(192.168.1.11 eth1)
+declare -a VI=(vi1 vi2 vi3 vi4 vi5 vi6)
+declare -a vi1=(10.0.0.1/24 1 5)
+declare -a vi2=(10.0.3.2/24 1 5)
+declare -a vi3=(10.0.9.2/24 1 5)
+declare -a vi4=(10.0.13.2/24 1 5)
+declare -a vi5=(0.0.0.0/32 1 60)
+declare -a vi6=(0.0.0.0/32 1 60)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
+declare -a NET1=(172.16.0.4/32 0.0.0.0)
+declare -a NET2=(10.0.0.0/24 0.0.0.0)
+declare -a NET3=(10.0.3.0/24 0.0.0.0)
+declare -a NET4=(10.0.9.0/24 0.0.0.0)
+declare -a NET5=(10.0.13.0/24 0.0.0.0)
+# 62.40.110.45 - end
+# 62.40.110.8 - start
+HOST=peo4
+ROUTERPWD=dreamer
+DPID=00000000AC100005
+SLICEVLAN=700
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1 CTRL2)
+declare -a CTRL1=(10.0.17.2 6633)
+declare -a CTRL2=(10.0.18.2 6633)
+declare -a LOOPBACK=(172.16.0.5/32 1 1)
 declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.5 255.255.0.0)
-declare -a TAP=(tap1)
-declare -a tap1=(1191 1193 10.0.4.1/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.4.2 tap1)
-declare -a ENDIP1=(192.168.1.2 eth1)
-# 10.216.33.180 - end
-# 10.216.33.181 - start
-HOST=euh6
-SLICEVLAN=199
+declare -a TAP=(tap1 tap2 tap3 tap4 tap5 tap6)
+declare -a tap1=(4 endip1)
+declare -a tap2=(7 endip2)
+declare -a tap3=(10 endip3)
+declare -a tap4=(15 endip4)
+declare -a tap5=(17 endip5)
+declare -a tap6=(19 endip6)
+declare -a endip1=(192.168.1.1 eth1)
+declare -a endip2=(192.168.1.2 eth1)
+declare -a endip3=(192.168.1.10 eth1)
+declare -a endip4=(192.168.1.3 eth1)
+declare -a endip5=(192.168.1.10 eth1)
+declare -a endip6=(192.168.1.10 eth1)
+declare -a VI=(vi1 vi2 vi3 vi4 vi5 vi6)
+declare -a vi1=(10.0.1.2/24 1 5)
+declare -a vi2=(10.0.4.1/24 1 5)
+declare -a vi3=(10.0.7.2/24 1 5)
+declare -a vi4=(10.0.12.2/24 1 5)
+declare -a vi5=(0.0.0.0/32 1 60)
+declare -a vi6=(0.0.0.0/32 1 60)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
+declare -a NET1=(172.16.0.5/32 0.0.0.0)
+declare -a NET2=(10.0.1.0/24 0.0.0.0)
+declare -a NET3=(10.0.4.0/24 0.0.0.0)
+declare -a NET4=(10.0.7.0/24 0.0.0.0)
+declare -a NET5=(10.0.12.0/24 0.0.0.0)
+# 62.40.110.8 - end
+# 62.40.110.147 - start
+HOST=peo5
+ROUTERPWD=dreamer
+DPID=00000000AC100006
+SLICEVLAN=700
+BRIDGENAME=br-dreamer
+declare -a CTRL=(CTRL1 CTRL2)
+declare -a CTRL1=(10.0.17.2 6633)
+declare -a CTRL2=(10.0.18.2 6633)
+declare -a LOOPBACK=(172.16.0.6/32 1 1)
 declare -a INTERFACES=(eth1)
 declare -a eth1=(192.168.1.6 255.255.0.0)
+declare -a TAP=(tap1 tap2 tap3 tap4 tap5 tap6)
+declare -a tap1=(8 endip1)
+declare -a tap2=(9 endip2)
+declare -a tap3=(11 endip3)
+declare -a tap4=(14 endip4)
+declare -a tap5=(20 endip5)
+declare -a tap6=(21 endip6)
+declare -a endip1=(192.168.1.1 eth1)
+declare -a endip2=(192.168.1.2 eth1)
+declare -a endip3=(192.168.1.9 eth1)
+declare -a endip4=(192.168.1.3 eth1)
+declare -a endip5=(192.168.1.9 eth1)
+declare -a endip6=(192.168.1.9 eth1)
+declare -a VI=(vi1 vi2 vi3 vi4 vi5 vi6)
+declare -a vi1=(10.0.5.1/24 1 5)
+declare -a vi2=(10.0.6.1/24 1 5)
+declare -a vi3=(10.0.8.2/24 1 5)
+declare -a vi4=(10.0.11.2/24 1 5)
+declare -a vi5=(0.0.0.0/32 1 60)
+declare -a vi6=(0.0.0.0/32 1 60)
+declare -a OSPFNET=(NET1 NET2 NET3 NET4 NET5)
+declare -a NET1=(172.16.0.6/32 0.0.0.0)
+declare -a NET2=(10.0.5.0/24 0.0.0.0)
+declare -a NET3=(10.0.6.0/24 0.0.0.0)
+declare -a NET4=(10.0.8.0/24 0.0.0.0)
+declare -a NET5=(10.0.11.0/24 0.0.0.0)
+# 62.40.110.147 - end
+# 62.40.110.52 - start
+HOST=cer1
+SLICEVLAN=700
+declare -a INTERFACES=(eth1)
+declare -a eth1=(192.168.1.9 255.255.0.0)
+declare -a TAP=(tap1 tap2 tap3)
+declare -a tap1=(11 ENDIP1)
+declare -a tap2=(20 ENDIP2)
+declare -a tap3=(21 ENDIP3)
+declare -a VI=(vitap1 vitap2 vitap3)
+declare -a vitap1=(10.0.8.1/24)
+declare -a vitap2=(10.0.15.2/24)
+declare -a vitap3=(10.0.16.1/24)
+declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.8.2 vitap1)
+declare -a ENDIP1=(192.168.1.6 eth1)
+declare -a ENDIP2=(192.168.1.6 eth1)
+declare -a ENDIP3=(192.168.1.6 eth1)
+# 62.40.110.52 - end
+# 62.40.110.20 - start
+HOST=cer2
+SLICEVLAN=700
+declare -a INTERFACES=(eth1)
+declare -a eth1=(192.168.1.10 255.255.0.0)
+declare -a TAP=(tap1 tap2 tap3)
+declare -a tap1=(10 ENDIP1)
+declare -a tap2=(17 ENDIP2)
+declare -a tap3=(19 ENDIP3)
+declare -a VI=(vitap1 vitap2 vitap3)
+declare -a vitap1=(10.0.7.1/24)
+declare -a vitap2=(10.0.14.1/24)
+declare -a vitap3=(10.0.15.1/24)
+declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.7.2 vitap1)
+declare -a ENDIP1=(192.168.1.5 eth1)
+declare -a ENDIP2=(192.168.1.5 eth1)
+declare -a ENDIP3=(192.168.1.5 eth1)
+# 62.40.110.20 - end
+# 62.40.110.153 - start
+HOST=cer3
+SLICEVLAN=700
+declare -a INTERFACES=(eth1)
+declare -a eth1=(192.168.1.11 255.255.0.0)
+declare -a TAP=(tap1 tap2 tap3)
+declare -a tap1=(12 ENDIP1)
+declare -a tap2=(18 ENDIP2)
+declare -a tap3=(22 ENDIP3)
+declare -a VI=(vitap1 vitap2 vitap3)
+declare -a vitap1=(10.0.9.1/24)
+declare -a vitap2=(10.0.14.2/24)
+declare -a vitap3=(10.0.16.2/24)
+declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.9.2 vitap1)
+declare -a ENDIP1=(192.168.1.4 eth1)
+declare -a ENDIP2=(192.168.1.4 eth1)
+declare -a ENDIP3=(192.168.1.4 eth1)
+# 62.40.110.153 - end
+# 62.40.110.51 - start
+HOST=ctr1
+SLICEVLAN=700
+declare -a INTERFACES=(eth1)
+declare -a eth1=(192.168.1.7 255.255.0.0)
 declare -a TAP=(tap1)
-declare -a tap1=(1191 1193 10.0.5.1/24 ENDIP1)
-declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.5.2 tap1)
+declare -a tap1=(1 ENDIP1)
+declare -a VI=(vitap1)
+declare -a vitap1=(10.0.17.2/24)
+declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.17.1 vitap1)
 declare -a ENDIP1=(192.168.1.3 eth1)
-# 10.216.33.181 - end
+# 62.40.110.51 - end
+# 62.40.110.18 - start
+HOST=ctr2
+SLICEVLAN=700
+declare -a INTERFACES=(eth1)
+declare -a eth1=(192.168.1.8 255.255.0.0)
+declare -a TAP=(tap1)
+declare -a tap1=(2 ENDIP1)
+declare -a VI=(vitap1)
+declare -a vitap1=(10.0.18.2/24)
+declare -a STATICROUTE=(10.0.0.0 255.0.0.0 10.0.18.1 vitap1)
+declare -a ENDIP1=(192.168.1.1 eth1)
+# 62.40.110.18 - end

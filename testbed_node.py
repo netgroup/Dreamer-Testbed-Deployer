@@ -30,9 +30,11 @@ import re
 from testbed_intf import *
 from testbed_deployer_utils import EndIP
 from testbed_deployer_utils import OSPFNetwork
+from coexistence_mechanisms import CoexFactory
 import sys
 #import paramiko
 from subprocess import Popen
+
 
 #TODO Integration with psShell
 # TODO Integrity Check, before starting the creation of the testbed.sh
@@ -471,13 +473,14 @@ class Oshi(IPHost):
 
 	dpidLen = 16
 
-	def __init__( self, NODInfo, vlan, user, pwd, tunneling, loopback):
+	def __init__( self, NODInfo, vlan, user, pwd, tunneling, loopback, OF_V):
 		IPHost.__init__(self, NODInfo, vlan, user, pwd, tunneling, loopback)
 		self.dpid = self.loopbackDpid(self.loopback.ip,"00000000")
 		self.vis = []
 		self.nameToVis = {}
 		self.ctrls = []
 		self.ingressfuncs = []
+		self.OF_V = OF_V
 
 	def loopbackDpid(self, loopback, extrainfo):
 		splitted_loopback = loopback.split('.')
@@ -596,44 +599,15 @@ class Oshi(IPHost):
 	def addIngress(self, ingress):
 		self.ingressfuncs.append(ingress)
 		return ingress
-
-	def serializeCoexRules(self, coex):
-		if coex.type != None:
-			if coex.type == "COEXA":
-				ret = "ovs-ofctl add-flow br-dreamer \"table=0,hard_timeout=0,priority=300,dl_vlan=%s,actions=resubmit(,1)\"" %(coex.value)
-				ret = ret + "\n"
-				for i in range(0,len(self.taps)):
-					ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=300,in_port=%s,action=output:%s\"" %(self.taps[i].name, self.vis[i].name)
-					ret = ret + "\n"
-					ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=300,in_port=%s,action=output:%s\"" %(self.vis[i].name, self.taps[i].name)
-					ret = ret + "\n"
-				ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller\""
-				ret = ret + "\n"
-				ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=301,dl_type=0x8942,action=controller\""
-				ret = ret + "\n"
-				return ret
-			elif coex.type == "COEXB":
-				ret = "ovs-ofctl add-flow br-dreamer \"table=0,hard_timeout=0,priority=300,dl_vlan=%s,actions=resubmit(,1)\"" %("0xffff")
-				ret = ret + "\n"
-				for i in range(0,len(self.taps)):
-					ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=300,in_port=%s,action=output:%s\"" %(self.taps[i].name, self.vis[i].name)
-					ret = ret + "\n"
-					ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=300,in_port=%s,action=output:%s\"" %(self.vis[i].name, self.taps[i].name)
-					ret = ret + "\n"
-				ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller\""
-				ret = ret + "\n"
-				ret = ret + "ovs-ofctl add-flow br-dreamer \"table=1,hard_timeout=0,priority=301,dl_type=0x8942,action=controller\""
-				ret = ret + "\n"
-				return ret
-		else:
-			print "Error No Coexistence mechanism defined"
-			sys.exit(-1)
 		
 	def generateLMErules(self, coex):
 		lmerules = open('lmerules.sh', 'a')
 		lmerules.write("# %s - start\n" % self.mgt_ip)
+
+		coexFactory = CoexFactory()
+		coex = coexFactory.getCoex(coex['coex_type'], coex['coex_data'], self.taps, self.vis, "br-dreamer", self.OF_V)
 		lmerules.write("# %s - start\n" % coex.type)
-		lmerules.write(self.serializeCoexRules(coex))
+		lmerules.write(coex.serializeRules())
 		lmerules.write("# %s - end\n" % coex.type)
 		for ingress in self.ingressfuncs:
 			lmerules.write("# %s - start\n" % ingress.type)

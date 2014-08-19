@@ -27,6 +27,7 @@
 # XXX Depends On Dreamer-Setup-Script
 
 import cmd
+from testbed_node import Node
 
 class TestbedCLI(cmd.Cmd):
     """ TestbedCLI, run a command on moltiple  hosts """
@@ -44,7 +45,7 @@ class TestbedCLI(cmd.Cmd):
         """add_host 
         Add the host to the host list"""
         if args:
-            self.hosts.update({args.split(',')[3]:psShell_node(args.split(',')[0],args.split(',')[1],args.split(',')[2])})
+            self.hosts.update({args.split(',')[3]:Node(args.split(',')[0],args.split(',')[1],args.split(',')[2])})
         else:
             print "usage: host "
 
