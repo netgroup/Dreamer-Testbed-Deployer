@@ -30,7 +30,7 @@ import argparse
 import sys
 import os
 
-parser_path = "../Dreamer-Topology-Parser-and-Validator/"
+parser_path = "" #"../Dreamer-Topology-Parser-and-Validator/"
 if parser_path == "":
 	print "Error Set Environment Variable At The Beginning Of File"
 	sys.exit(-2)
