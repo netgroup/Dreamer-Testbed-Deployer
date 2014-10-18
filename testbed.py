@@ -234,8 +234,14 @@ class TestbedOSHI( Testbed ):
 		self.nameToOSPFNet = {}
 		self.oshiToControllers = {}
 		self.cerToPEO = {}
-		self.vllcfgline = []
+		self.vlls = []
 		self.ospfBase = 1
+
+		self.pws = []
+		self.pe_cer_to_vsf = {}
+		self.vsfs = []
+		self.customer_to_vtepallocator = {}
+		self.cer_to_customer = {}
 
 	def addCrOshi(self, nodeproperties, name=None):
 		if len(self.crosinfo) == 0:
@@ -300,7 +306,7 @@ class TestbedOSHI( Testbed ):
 		name = "ctr%s" % index
 		return name
 
-	def addCer(self, name=None):
+	def addCer(self, cid, name=None):
 		if len(self.cersinfo) == 0:
 			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Host"
 			sys.exit(-2)
@@ -314,62 +320,19 @@ class TestbedOSHI( Testbed ):
 		cer = Host(cer, self.vlan, self.user, self.pwd, self.tunneling)
 		self.cers.append(cer)
 		self.nameToNode[cer.name] = cer
+
+		temp = int(cid)
+		exist = self.customer_to_vtepallocator.get(cid, None)
+		if not exist:
+			self.customer_to_vtepallocator[cid] = VTEPAllocator()
+		self.cer_to_customer[name]=cid
+
 		return cer
 
 	def newCerName(self):
 		index = str(len(self.cers) + 1)
 		name = "cer%s" % index
 		return name
-
-	#def addL2Switch(self, name):
-	#	if len(self.l2swsinfo) == 0:
-	#		print "Error The Testbed Provided Is Not Enough Big For The Creation Of L2Sw"
-	#		sys.exit(-2)
-	#	l2sw = self.l2swsinfo[0]
-	#	l2sw.name = name
-	#	self.l2swsinfo.remove(l2sw)
-	#	l2switch = L2Switch(l2sw, self.vlan, self.user, self.pwd, self.tunneling)
-	#	self.l2sws.append(l2switch)
-	#	self.nameToNode[l2switch.name] = l2switch
-	#	return l2switch
-		
-	# Allocation OF OVS equipment, We Use A RR Behavior;
-	#def roundrobinallocation(self):
-	#	ctrl_to_allocate = []
-	#	for ctrl in self.ctrls:
-	#		if len(ctrl.ips) > 0:
-	#			ctrl_to_allocate.append(ctrl)
-	#	if len(ctrl_to_allocate) == 1:
-	#		for osh in self.oshs:
-	#			osh.setControllers([ctrl_to_allocate[0].ips[0]], [ctrl_to_allocate[0].port])
-	#		for aos in self.aoss:
-	#			aos.setControllers([ctrl_to_allocate[0].ips[0]], [ctrl_to_allocate[0].port])
-	#
-	#	elif len(ctrl_to_allocate) >= 2:
-	#		i = 0
-	#		j = 0
-	#		for osh in self.oshs:
-	#			i = i % len(ctrl_to_allocate)
-	#			j = (i + 1) % len(ctrl_to_allocate)
-	#			ip_1 = ctrl_to_allocate[i].ips[0]
-	#			ip_2 = ctrl_to_allocate[j].ips[0]
-	#			p_1 = ctrl_to_allocate[i].port
-	#			p_2 = ctrl_to_allocate[j].port
-	#			osh.setControllers([ip_1, ip_2], [p_1, p_2])
-	#			i = i + 1
-	#		i = 0
-	#		j = 0
-	#		for aos in self.aoss:
-	#			i = i % len(ctrl_to_allocate)
-	#			j = (i + 1) % len(ctrl_to_allocate)
-	#			ip_1 = ctrl_to_allocate[i].ips[0]
-	#			ip_2 = ctrl_to_allocate[j].ips[0]
-	#			p_1 = ctrl_to_allocate[i].port
-	#			p_2 = ctrl_to_allocate[j].port
-	#			aos.setControllers([ip_1, ip_2], [p_1, p_2])
-	#			i = i + 1
-	#	else:
-	#		print "Warning No Controller Added - Information Will Not Be Generated"
 
 	def completeAllocation(self):
 		ips = []
@@ -473,12 +436,95 @@ class TestbedOSHI( Testbed ):
 		(rhs_peo_vi, rhs_peo_tap, rhs_peo_ospf_net) = rhs_peo.addIntf([rhs_cer_eth_ip, rhs_peo_eth, rhs_peo_tap_port, rhs_cer_tap_port, None, 
 		rhs_peo_ip, rhs_cer_ip, vni])
 
-		self.addLineToCFG(lhs_peo.dpid, lhs_peo_tap, rhs_peo.dpid, rhs_cer_tap)
+		self.addLineToCFG(lhs_peo.dpid, lhs_peo_tap, rhs_peo.dpid, rhs_peo_tap)
 
 	def addLineToCFG(self, lhs_dpid, lhs_tap, rhs_dpid, rhs_tap):
 		lhs_dpid = ':'.join(s.encode('hex') for s in lhs_dpid.decode('hex'))
 		rhs_dpid = ':'.join(s.encode('hex') for s in rhs_dpid.decode('hex'))
-		self.vllcfgline.append(("%s|%s|%s|%s|0|0|\n" %(lhs_dpid, rhs_dpid, lhs_tap.name, rhs_tap.name)))
+		self.vlls.append({'lhs_dpid':lhs_dpid, 'rhs_dpid':rhs_dpid, 'lhs_intf':lhs_tap.name, 'rhs_intf':rhs_tap.name, 'lhs_label':'0', 			'rhs_label':'0'})
+
+	def addPW(self, lhs_cer, rhs_cer, properties):
+
+		lhs_peo = self.cerToPEO[lhs_cer]
+		rhs_peo = self.cerToPEO[rhs_cer]
+	
+		lhs_cer = self.getNodeByName(lhs_cer)	
+		rhs_cer = self.getNodeByName(rhs_cer)
+		lhs_peo = self.getNodeByName(lhs_peo)	
+		rhs_peo = self.getNodeByName(rhs_peo)
+		
+		lhs_vsf = self.getVSFByCERandPEO(lhs_cer.name, lhs_peo.name)
+		rhs_vsf = self.getVSFByCERandPEO(rhs_cer.name, rhs_peo.name)
+
+		vtepallocator = self.customer_to_vtepallocator[self.cer_to_customer[lhs_cer.name]]
+
+		(lhs_cer_eth, lhs_cer_eth_ip) = lhs_cer.next_eth()
+		(lhs_peo_eth, lhs_peo_eth_ip) = lhs_peo.next_eth()
+		
+		
+		lhs_cer_tap_port = lhs_cer.newTapPort()
+		lhs_peo_tap_port = lhs_peo.newTapPort()
+		
+
+		lhs_cer_ospf_net = self.addOSPFNet(properties.net)
+		lhs_cer_ip = properties.ipLHS
+		lhs_peo_ip = "0.0.0.0"
+		vni = self.newVNI()
+
+		(lhs_cer_vi, lhs_cer_tap, temp) = lhs_cer.addIntf([lhs_peo_eth_ip, lhs_cer_eth, lhs_cer_tap_port, lhs_peo_tap_port, lhs_cer_ospf_net, 
+		lhs_cer_ip, lhs_peo_ip, vni])
+		lhs_peo_tap = lhs_peo.addPWTap([lhs_cer_eth_ip, lhs_peo_eth, lhs_peo_tap_port, lhs_cer_tap_port, None, 
+		lhs_peo_ip, lhs_cer_ip, vni])
+
+		lhs_vtep = vtepallocator.next_vtep()
+		rhs_vtep = vtepallocator.next_vtep()
+		
+		lhs_peo_intf = lhs_peo.getPWintf(lhs_vsf.name)
+		lhs_vsf.addPW(lhs_peo_tap, lhs_vtep, rhs_vtep)
+
+		(rhs_cer_eth, rhs_cer_eth_ip) = rhs_cer.next_eth()
+		(rhs_peo_eth, rhs_peo_eth_ip) = rhs_peo.next_eth()
+		
+		rhs_cer_tap_port = rhs_cer.newTapPort()
+		rhs_peo_tap_port = rhs_peo.newTapPort()
+
+		rhs_cer_ospf_net = copy.deepcopy(lhs_cer_ospf_net)
+		rhs_cer_ip = properties.ipRHS
+		rhs_peo_ip = "0.0.0.0"
+		vni = self.newVNI()
+
+		(rhs_cer_vi, rhs_cer_tap, temp) = rhs_cer.addIntf([rhs_peo_eth_ip, rhs_cer_eth, rhs_cer_tap_port, rhs_peo_tap_port, rhs_cer_ospf_net, 
+		rhs_cer_ip, rhs_peo_ip, vni])
+		rhs_peo_tap = rhs_peo.addPWTap([rhs_cer_eth_ip, rhs_peo_eth, rhs_peo_tap_port, rhs_cer_tap_port, None, 
+		rhs_peo_ip, rhs_cer_ip, vni])
+
+		rhs_peo_intf = rhs_peo.getPWintf(rhs_vsf.name)
+		rhs_vsf.addPW(rhs_peo_tap, rhs_vtep, lhs_vtep)
+
+		self.addLineToPWCFG(lhs_peo.dpid, lhs_peo_intf, lhs_vtep, rhs_peo.dpid, rhs_peo_intf, rhs_vtep)
+		
+	def addLineToPWCFG(self, lhs_dpid, lhs_intf, lhs_vtep, rhs_dpid, rhs_intf, rhs_vtep):
+		lhs_dpid = ':'.join(s.encode('hex') for s in lhs_dpid.decode('hex'))
+		rhs_dpid = ':'.join(s.encode('hex') for s in rhs_dpid.decode('hex'))
+		lhs_mac = ':'.join(s.encode('hex') for s in lhs_vtep.MAC.decode('hex'))
+		rhs_mac = ':'.join(s.encode('hex') for s in rhs_vtep.MAC.decode('hex'))
+		self.pws.append({'lhs_dpid':lhs_dpid, 'rhs_dpid':rhs_dpid, 'lhs_intf':lhs_intf, 'rhs_intf':rhs_intf, 'lhs_label':'0', 'rhs_label':'0',
+		'lhs_mac': lhs_mac, 'rhs_mac': rhs_mac})
+
+	def getVSFByCERandPEO(self, cer, peo):
+		key = "%s-%s" %(cer,peo)
+		vsf = self.pe_cer_to_vsf.get(key, None)
+		if not vsf:
+			name = self.newVsfName()
+			vsf = VSF(name)
+			self.vsfs.append(vsf)
+			self.pe_cer_to_vsf[key]=vsf
+		return vsf
+
+	def newVsfName(self):
+		index = str(len(self.vsfs) + 1)
+		name = "vsf%s" % index
+		return name
 		
 	def newOSPFNetName(self):
 		ret = self.ospfBase
@@ -546,10 +592,40 @@ class TestbedOSHI( Testbed ):
 		management.write(machine)
 
 	def generateVLLCfg(self):
-		cfg = open('vll_pusher.cfg','w')
-		for line in self.vllcfgline:
-			cfg.write(line)
-		cfg.close()
+
+		coexFactory = CoexFactory()
+		coex = coexFactory.getCoex(self.coex['coex_type'], self.coex['coex_data'], [], [], "", self.OF_V)
+
+		vllcfg_file = open('vll_pusher.cfg','w')
+		vllcfg = {}
+		vllcfg['tableSBP'] = coex.tableSBP
+		vllcfg['tableIP'] = coex.tableIP
+		vllcfg['vlls'] = self.vlls
+		vllcfg['pws'] = self.pws
+		vllcfg_file.write(json.dumps(vllcfg, sort_keys=True, indent=4))
+		vllcfg_file.close()
+
+	def generateVSFCfg(self):
+
+		vsfcfg_file = open('vsf.cfg', 'w')
+		vsfcfg = {}
+		vsfss = []
+
+		for peo in self.pe_oshs:
+			data = {}
+			vm = peo.mgt_ip
+			vsfs = []
+			for key, vsf in self.pe_cer_to_vsf.iteritems():
+				if peo.name in key:
+					vsfs.append(vsf.serialize())
+			if len(vsfs) > 0:
+				vsfss.append({ 'vm':vm, 'vsfs':vsfs })
+
+		vsfcfg['vsfs']=vsfss
+		vsfcfg_file.write(json.dumps(vsfcfg, sort_keys=True, indent=4))
+		vsfcfg_file.close()
+				
+
 
 	def addCoexistenceMechanism(self, coex_type, coex_data):
 		if self.coex != {}:
@@ -742,3 +818,9 @@ class TestbedOSHIOFELIA( TestbedOSHI ):
 			cer.configure([self.ipnet])
 		for ctrl in self.ctrls:
 			ctrl.configure([self.ipnet])
+
+	def generateVSFCfg(self):
+		raise NotImplementedError("Not Supported")
+
+	def addPW(self, lhs_cer, rhs_cer, properties):
+		raise NotImplementedError("Not Supported")

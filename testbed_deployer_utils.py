@@ -70,9 +70,12 @@ class OSPFNetwork:
 
 class LoopbackAllocator(object):
 
+	ipnet = ("172.16.0.0/255.240.0.0").decode('unicode-escape')
+	bit = 32
+
 	def __init__(self):	
 		print "*** Calculating Available Loopback Addresses"
-		self.loopbacknet = (IPv4Network(("172.16.0.0/255.240.0.0").decode('unicode-escape')))
+		self.loopbacknet = (IPv4Network(self.ipnet))
 		self.hosts = list(self.loopbacknet.hosts())
 	
 	def next_hostAddress(self):
@@ -82,14 +85,15 @@ class LoopbackAllocator(object):
 
 class NetAllocator(object):
 
-	ipnet = "10.0.0.0/255.0.0.0".decode('unicode-escape')
+	ipnet = ("10.0.0.0/255.0.0.0").decode('unicode-escape')
+	bit = 24
 	
 	def __init__(self, generate):
 		if generate == True:		
 			print "*** Calculating Available IP Networks"
 			self.ipnet = (IPv4Network(self.ipnet))
-			self.iternets = self.ipnet.subnets(new_prefix=24)
-			self.iternets24 = self.iternets.next().subnets(new_prefix=24)
+			self.iternets = self.ipnet.subnets(new_prefix=self.bit)
+			self.iternets24 = self.iternets.next().subnets(new_prefix=self.bit)
 	
 	def next_netAddress(self):
 		DONE = False
@@ -101,7 +105,7 @@ class NetAllocator(object):
 					DONE = True
 				except StopIteration:
 					#print "Error Change SuperSubnet"
-					self.iternets24 = self.iternets.next().subnets(new_prefix=24)
+					self.iternets24 = self.iternets.next().subnets(new_prefix=self.bit)
 			except StopIteration:
 				print "Error IP Net SoldOut"
 				sys.exit(-2)
@@ -110,6 +114,7 @@ class NetAllocator(object):
 class OFELIANetAllocator(NetAllocator):
 	
 	mgmtnet = "10.216.0.0/255.255.0.0".decode('unicode-escape')	
+	bit = 24
 
 	def __init__(self):
 		NetAllocator.__init__(self, False)
@@ -120,8 +125,46 @@ class OFELIANetAllocator(NetAllocator):
 			print "*** Calculating Available IP network"
 			self.iternets = self.ipnet.address_exclude(self.mgmtnet)
 		else:
-			self.iternets = self.ipnet.subnets(new_prefix=24)
-		self.iternets24 = self.iternets.next().subnets(new_prefix=24)
+			self.iternets = self.ipnet.subnets(new_prefix=self.bit)
+		self.iternets24 = self.iternets.next().subnets(new_prefix=self.bit)
+
+class VTEPAllocator(object):
+
+	vtepnet = ("172.16.0.0/255.240.0.0").decode('unicode-escape')
+	bit = 12
+
+	def __init__(self):	
+		print "*** Calculating Available VTEP Addresses"
+		self.vtepnet = (IPv4Network(self.vtepnet))
+		self.hosts = list(self.vtepnet.hosts())
+	
+	def next_hostAddress(self):
+		host = self.hosts.pop(0)
+		return host.__str__()
+
+	def next_vtep(self):
+		host = self.next_hostAddress()
+		mac = self.IPtoMAC(host, '0000')
+		return VTEP("%s/%s" %(host,self.bit), mac)
+				
+
+	def IPtoMAC(self, IP, extrainfo):
+		splitted_IP = IP.split('.')
+		hexIP = '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, splitted_IP))
+		MAC = "%s%s" %(extrainfo, hexIP)
+		if len(MAC)>12:
+			error("Unable To Derive MAC From IP and ExtraInfo\n")
+			sys.exit(-1)
+		return MAC
+
+class VTEP(object):
+
+	def __init__(self, IP, MAC):
+		self.IP = IP
+		self.MAC = MAC
+
+	def __str__(self):
+		return "{'ip':'%s', 'mac':'%s'}" %(self.IP, self.MAC)
 
 class PropertiesGenerator(object):
 

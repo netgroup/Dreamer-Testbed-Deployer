@@ -32,6 +32,7 @@ class CoexistenceMechanism (object):
 
 	prio_std_rules = 300
 	prio_special_rules = 301
+	prio_max = 32768
 	
 	def __init__(self, eths, vis, name, typeof):
 		self.eths = eths
@@ -42,6 +43,7 @@ class CoexistenceMechanism (object):
 class CoexA(CoexistenceMechanism):
 
 	tableIP = 1
+	tableSBP = 0
 	
 	def __init__(self, vlan_id, eths, vis, name):
 		if vlan_id > 4095:
@@ -101,7 +103,8 @@ class CoexA_13(CoexA):
 
 class CoexB(CoexistenceMechanism):
 	
-	tableIP = 1	
+	tableIP = 1
+	tableSBP = 0	
 
 	def __init__(self, eths, vis, name):
 		CoexistenceMechanism.__init__(self, eths, vis, name, "COEXB")
@@ -154,9 +157,44 @@ class CoexB_13(CoexB):
 
 		return rules
 
+class CoexH(CoexistenceMechanism):
+	
+	tableIP=0
+	tableSBP = 1
+	MPLS_UNICAST = "0x8847"
+	MPLS_MULTICAST = "0x8848"
+
+	def __init__(self, eths, vis, name):
+		CoexistenceMechanism.__init__(self, eths, vis, name, "COEXH")
+
+	def serialize(self):
+		return "declare -a COEX=(%s %s)\n" % (self.type, 0)
+
+	def serializeRules(self):
+
+		rules = ""
+
+		rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,dl_type=%s,actions=goto_table:%s"\n' %(self.name, 
+		self.prio_max, self.MPLS_UNICAST, self.tableSBP)
+		rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,dl_type=%s,actions=goto_table:%s"\n' %(self.name, 
+		self.prio_max, self.MPLS_MULTICAST, self.tableSBP)
+
+		for eth, vi in zip(self.eths, self.vis):
+			rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,in_port=%s,action=output:%s"\n' %(self.name, 
+			self.prio_std_rules, eth, vi)
+			rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,in_port=%s,action=output:%s"\n' %(self.name, 
+			self.prio_std_rules, vi, eth)
+
+		rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,dl_type=0x88cc,action=controller"\n' %(self.name, 
+		self.prio_special_rules)
+		rules = rules + 'ovs-ofctl -O OpenFlow13 add-flow %s "table=0,hard_timeout=0,priority=%s,dl_type=0x8942,action=controller"\n' %(self.name,
+		self.prio_special_rules)		
+
+		return rules
+
 class CoexFactory(object):
 
-	coex_types=["COEXA", "COEXB"]
+	coex_types=["COEXA", "COEXB", "COEXH"]
 
 	def getCoex(self, coex_type, coex_data, in_eths, in_vis, name, OF_V):
 		if coex_type not in self.coex_types:
@@ -169,7 +207,11 @@ class CoexFactory(object):
 		for i in range(0, len(in_eths)):
 
 			eths.append(in_eths[i].name)
-			vis.append(in_vis[i].name)		
+			vis.append(in_vis[i].name)
+
+			# Because the PW access is different
+			if i >= len(in_vis):		
+				break				
 
 		if coex_type == "COEXA":
 			if OF_V == None:
@@ -182,3 +224,10 @@ class CoexFactory(object):
 				return CoexB(eths, vis, name)
 			elif OF_V == "OpenFlow13":
 				return CoexB_13(eths, vis, name)
+
+		if coex_type == "COEXH":
+			if OF_V == None:
+				print("ERROR %s is not supported with OpenFlow 1.0" % coex_type)
+				sys.exit(-2)
+			elif OF_V == "OpenFlow13":
+				return CoexH(eths, vis, name)

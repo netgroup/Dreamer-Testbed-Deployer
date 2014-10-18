@@ -482,6 +482,10 @@ class Oshi(IPHost):
 		self.ingressfuncs = []
 		self.OF_V = OF_V
 
+		self.vsf_to_port = {}
+		self.pwtaps = []
+		self.pwtapBase = 1
+
 	def loopbackDpid(self, loopback, extrainfo):
 		splitted_loopback = loopback.split('.')
 		hexloopback = '{:02X}{:02X}{:02X}{:02X}'.format(*map(int, splitted_loopback))
@@ -530,6 +534,26 @@ class Oshi(IPHost):
 		self.nameToTaps[name] = tap
 		return tap
 
+	def addPWTap(self, param):
+		if len(param) != 8:
+				print "Error OSHI.addTapIP Invalid Parameter"
+				sys.exit(-2)
+		name = self.newPWTapName()
+		remote_ip = param[0]
+		local_eth = param[1]
+		net = param[4]
+		endip = self.addEndIP(remote_ip, local_eth)
+		if self.tunneling == "OpenVPN":
+			local_port = param[2]
+			remote_port =param[3]
+			tap = TapOpenVPNIntf(name, local_port, remote_port, endip.name)
+		elif self.tunneling == "VXLAN":
+			VNI = param[7]
+			tap = TapVXLANIntf(name, VNI, endip.name)
+		self.pwtaps.append(tap)
+		self.nameToTaps[name] = tap
+		return tap
+
 	def addIntf(self, param):
 		if len(param) != 8:
 			print "Error Oshi.addIntf Invalid Parameter"
@@ -548,6 +572,11 @@ class Oshi(IPHost):
 		ret = self.viBase
 		self.viBase = self.viBase + 1
 		return "vi%s" % ret
+
+	def newPWTapName(self):
+		ret = self.pwtapBase
+		self.pwtapBase = self.pwtapBase + 1
+		return "pwtap%s" % ret
 	
 	def addVi(self, ip, netbit, hello_int, cost):
 		name = self.newViName()
@@ -568,6 +597,9 @@ class Oshi(IPHost):
 		ret = "declare -a CTRL=(" + " ".join(names) + ")\n" + serialized_line
 		return ret
 
+	def pwtapsSerialization(self):
+		return "declare -a PWTAP=(" + " ".join("%s" % pwtap.name for pwtap in self.pwtaps) + ")\n"
+
 	def configure(self, params):
 		ipbase = params[0]
 		testbed = open('testbed.sh','a')
@@ -585,6 +617,10 @@ class Oshi(IPHost):
 		testbed.write(self.tapsSerialization())
 		for tap in self.taps:
 			testbed.write(tap.serialize())
+		if len(self.pwtaps) > 0:
+			testbed.write(self.pwtapsSerialization())
+		for pwtap in self.pwtaps:
+			testbed.write(pwtap.serialize())
 		for endip in self.endips:
 			testbed.write(endip.serialize())
 		testbed.write(self.visSerialization())
@@ -604,6 +640,22 @@ class Oshi(IPHost):
 		lmerules = open('lmerules.sh', 'a')
 		lmerules.write("# %s - start\n" % self.mgt_ip)
 
+		"""
+		temp_vi=[]
+		temp_tap=[]
+		for vi in self.vis:
+			tapname = "tap%s" %(self.strip_number(vi.name))
+			TAP = None
+			for tap in self.taps:
+				if tapname == tap.name:
+					TAP = tap
+					break
+			if TAP != None:
+				temp_vi.append(vi)
+				temp_tap.append(TAP)
+
+		"""
+
 		coexFactory = CoexFactory()
 		coex = coexFactory.getCoex(coex['coex_type'], coex['coex_data'], self.taps, self.vis, "br-dreamer", self.OF_V)
 		lmerules.write("# %s - start\n" % coex.type)
@@ -615,3 +667,40 @@ class Oshi(IPHost):
 			lmerules.write("# %s - end\n" % ingress.type)
 		lmerules.write("# %s - end\n" % self.mgt_ip)
 		lmerules.close()
+
+	def getPWintf(self, vsfname):
+
+		index = self.vsf_to_port.get(vsfname, None)
+		if not index:
+			index = 0
+			index = index + 1
+			self.vsf_to_port[vsfname] = index
+		else:
+			index = index + 2
+		intf = "r%s-eth%s" %(vsfname, index)
+		return intf
+
+	def strip_number(self, vi):
+		intf = str(vi)
+		intf_pattern = re.search(r'vi\d+$', intf)
+		if intf_pattern is None:
+			print "ERROR bad name for intf"
+			sys.exit(-2)
+		return int(intf[2:])
+		
+
+class VSF(object):
+
+	def __init__( self, name):
+		self.name = name
+		self.pws = []		
+
+	def addPW( self, peo_tap, local_vtep, remote_vtep):
+		pw = { 'cer_intf':peo_tap.name, 'local_vtep':local_vtep.__str__(), 'remote_vtep':remote_vtep.__str__() }
+		self.pws.append(pw)
+	
+	def serialize( self ):
+		return { 'name':self.name, 'pws':self.pws}
+
+		
+

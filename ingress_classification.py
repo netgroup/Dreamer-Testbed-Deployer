@@ -82,9 +82,20 @@ class IngrB_CoexB(IngressClassification):
 
 		return rules
 
+class IngrB_CoexH(IngressClassification):
+
+	def __init__(self, eth, vi, name):
+		IngressClassification.__init__(self, eth, vi, name, "INGRB")
+	
+	def serialize(self):
+
+		rules = ""
+
+		return rules
+
 class IngressFactory(object):
 
-	coex_types=["COEXA", "COEXB"]
+	coex_types=["COEXA", "COEXB", "COEXH"]
 	ingress_types=["INGRB"]
 
 	def getIngr(self, coex_type, coex_data, ingress_type, ingress_data, eth, vi, name, OF_V):
@@ -108,3 +119,10 @@ class IngressFactory(object):
 
 		if coex_type == "COEXB" and ingress_type == "INGRB":
 			return IngrB_CoexB(eth, vi, name)
+
+		if coex_type == "COEXH" and ingress_type == "INGRB":
+			if OF_V == None:
+				print("ERROR %s is not supported by OpenFlow 1.0" % coex_type)
+				sys.exit(-2)
+			elif OF_V == "OpenFlow13":
+				return IngrB_CoexH(eth, vi, name)

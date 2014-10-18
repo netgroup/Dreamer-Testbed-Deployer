@@ -30,7 +30,7 @@ import argparse
 import sys
 import os
 
-parser_path = "" #"../Dreamer-Topology-Parser-and-Validator/"
+parser_path = "../Dreamer-Topology-Parser-and-Validator/"
 if parser_path == "":
 	print "Error Set Environment Variable At The Beginning Of File"
 	sys.exit(-2)
@@ -74,21 +74,22 @@ def topo(topology, testbed):
 			pp_properties.append(generator.getLinksProperties(ppsubnet.links))
 		
 		if verbose:
-			print "*** Build Switched Links Properties"
-		#l2_properties = []
-		#for l2subnet in l2subnets:
-		#	l2_properties.append(generator.getLinksProperties(l2subnet.links))
-
-		if verbose:
 			print "*** Build VLLs Properties"
 		vlls_properties = []
 		for vll in vlls:
 			vlls_properties.append(generator.getVLLsProperties(vll))
+
+		#XXX Da eliminare
+		pws = []
+		pws_properties = []
+		for vll in vlls:
+			pws.append(vll)
+			pws_properties.append(generator.getVLLsProperties(vll))
+			
 			
 
 	set_cr_oshis = parser.cr_oshis
 	set_pe_oshis = parser.pe_oshis
-	#set_l2sws = parser.l2sws
 	set_cers = parser.cers
 
 	factory = TestbedFactory(False)
@@ -112,17 +113,10 @@ def topo(topology, testbed):
 			print "*** %s - %s" %(peoshi, pe_oshis_properties[i])	
 		i = i + 1
 
-	#if verbose:
-	#	print "*** Build L2Switch"
-	#i = 0
-	#for l2switch in set_l2sws:
-	#	testbed.addL2Switch(l2switch)	
-	#	i = i + 1
-
 	if verbose:
 		print "*** Build CONTROLLER"
 	ctrl = testbed.addController(6633, "ctr1")	
-	testbed.addCoexistenceMechanism("COEXA", 1)
+	testbed.addCoexistenceMechanism("COEXH", 0)
 	linkproperties = generator.getLinksProperties([(croshi, ctrl.name)])
 	linkproperties[0].ingr.type = "INGRB"
 	linkproperties[0].ingr.data = None
@@ -130,6 +124,7 @@ def topo(topology, testbed):
 	if verbose:			
 		print "*** Connect", ctrl.name, "To", croshi
 
+	"""
 	if verbose:
 		print "*** Build CONTROLLER2"
 	ctrl2 = testbed.addController(6633, "ctr2")	
@@ -140,11 +135,12 @@ def topo(topology, testbed):
 	[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(croshi2, ctrl2.name, linkproperties[0])
 	if verbose:			
 		print "*** Connect", ctrl2.name, "To", croshi2
+	"""
 
 	if verbose:
 		print "*** Build CERS"
 	for cer in set_cers:
-		testbed.addCer(cer)
+		testbed.addCer(cid = 0, name = cer)
 
 	if verbose:	
 		print "*** Create Networks Point To Point"
@@ -161,30 +157,20 @@ def topo(topology, testbed):
 				print "*** Link Properties", pp_properties[i][0]
 			i = i + 1
 
-	if verbose:	
-		print "*** Create Switched Networks"
-	j = 0
-	#for l2subnet in l2subnets:
-	#		links = l2subnet.links
-	#		if verbose:
-	#				print "*** Subnet: Node %s - Links %s" %(l2subnet.nodes, links)
-	#		i = 0
-	#		for link in links:
-	#			node1 = link[0]
-	#			node2 = link[1]
-	#			[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(node1, node2, l2_properties[j][i])
-	#			if verbose:			
-	#				print "*** Connect", node1, "To", node2
-	#				print "*** Link Properties", l2_properties[j][i]
-	#			i = i + 1
-	#		j = j + 1
-
 	i = 0
 	for vll in vlls:
 		testbed.addVLL(vll[0], vll[1], vlls_properties[i])
 		if verbose:			
 			print "*** VLLs Properties", vlls_properties[i]
 		i = i + 1	
+
+	i = 0
+	for pw in pws:
+		testbed.addPW(pw[0], pw[1], pws_properties[i])
+		if verbose:			
+			print "*** PWs Properties", pws_properties[i]
+		i = i + 1		
+
 	print "*** Generate testbed.sh"
 	testbed.configure()
 	print "*** Generate LME rules"
@@ -193,6 +179,8 @@ def topo(topology, testbed):
 	testbed.generateVLLCfg()
 	print "*** Generate management.sh"
 	testbed.configureMGMT()
+	print "*** Generate vsf.cfg"
+	testbed.generateVSFCfg()
 
 def parse_cmd_line():
 	parser = argparse.ArgumentParser(description='Testbed Deployer')
