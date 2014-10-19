@@ -128,13 +128,6 @@ def topo(topology, testbed):
 		if verbose:
 			print "*** %s - %s" %(ctrl, parser.ctrls_properties[i])	
 		i = i + 1
-		
-		linkproperties = generator.getLinksProperties([(croshi, ctrl)])
-		linkproperties[0].ingr.type = "INGRB"
-		linkproperties[0].ingr.data = None
-		[(lhs_vi, lhs_tap, lhs_ospf_net), (rhs_vi, rhs_tap, rhs_ospf_net)] = testbed.addLink(croshi, ctrl, linkproperties[0])
-		if verbose:			
-			print "*** Connect", ctrl, "To", croshi
 
 	if verbose:
 		print "*** Build CERS"
