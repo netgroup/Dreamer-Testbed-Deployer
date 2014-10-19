@@ -13,13 +13,7 @@
 				"frozen": false,
 				"node-type": "OSHI-CR",
 				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.49",
-						"interfaces":[
-							"eth1"
-						]
-					}
+					"loopback": "" 
 				}
 			}
 		},
@@ -36,13 +30,7 @@
 				"frozen": false,
 				"node-type": "OSHI-CR",
 				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.16",
-						"interfaces":[
-							"eth1"
-						]
-					}
+					"loopback": "" 
 				}
 			}
 		},
@@ -59,13 +47,7 @@
 				"frozen": false,
 				"node-type": "OSHI-PE",
 				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.47",
-						"interfaces":[
-							"eth1"
-						]
-					}
+					"loopback": "" 
 				}
 			}
 		},
@@ -82,13 +64,7 @@
 				"frozen": false,
 				"node-type": "OSHI-CR",
 				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.149",
-						"interfaces":[
-							"eth1"
-						]
-					}
+					"loopback": "" 
 				}
 			}
 		},
@@ -105,13 +81,7 @@
 				"frozen": false,
 				"node-type": "OSHI-PE",
 				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.49",
-						"interfaces":[
-							"eth1"
-						]
-					}
+					"loopback": ""
 				}
 			}
 		},
@@ -128,12 +98,6 @@
 				"frozen": false,
 				"node-type": "CE",
 				"property": { 
-					"vm":{
-						"mgt_ip":"62.40.110.52",
-						"interfaces":[
-							"eth1"
-						]
-					}
 				}
 			}
 		},
@@ -150,12 +114,6 @@
 				"frozen": false,
 				"node-type": "CE",
 				"property": { 
-					"vm":{
-						"mgt_ip":"62.40.110.20",
-						"interfaces":[
-							"eth1"
-						]
-					}
 				}
 			}
 		},
@@ -172,13 +130,7 @@
 				"frozen": false,
 				"node-type": "OF Controller",
 				"property": {
-					"tcp_port":"6633",
-					"vm":{
-						"mgt_ip":"62.40.110.49",
-						"interfaces":[
-							"eth1"
-						]
-					}
+					"tcp_port":"6633"
 				}
 			}
 		}
@@ -284,7 +236,7 @@
 	"graph_parameters": {
 		"tunneling": "VXLAN",
 		"testbed": "MININET",
-		"mapped": true,
+		"mapped": false,
 		"vlan":"0",
 		"generated":false
 	}

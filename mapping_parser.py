@@ -184,4 +184,3 @@ class NODInfo:
 	def __init__(self, mgt_ip, intfs):
 		self.mgt_ip = mgt_ip
 		self.intfs = intfs
-		self.name = None

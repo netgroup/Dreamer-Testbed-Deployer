@@ -45,9 +45,9 @@ class Node:
 	netbitTestbed=16
 	netmaskTestbed=[255, 255, 0, 0]
 	
-	def __init__( self, NODInfo, user, pwd):
-		self.name = NODInfo.name
-		self.mgt_ip = NODInfo.mgt_ip
+	def __init__( self, name, mgt_ip, intfs, user, pwd):
+		self.name = name
+		self.mgt_ip = mgt_ip
 		self.eths = []
 		self.nameToEths = {}
 		self.user = user
@@ -56,7 +56,7 @@ class Node:
 		self.conn = None
 		self.process = None
 		#self.connect()
-		for eth in NODInfo.intfs:
+		for eth in intfs:
 			eth_intf = EthIntf(eth, self.next_testbedAddress(), self.netbitTestbed, self.netmaskTestbed)
 			self.eths.append(eth_intf)
 			self.nameToEths[eth] = eth_intf
@@ -132,8 +132,8 @@ class Node:
 
 class L2Switch(Node):
 
-	def __init__( self, NODInfo, vlan, user, pwd, tunneling):
-		Node.__init__(self, NODInfo, user, pwd)
+	def __init__( self, name, mgt_ip, intfs, vlan, user, pwd, tunneling):
+		Node.__init__(self, name, mgt_ip, intfs, user, pwd)
 		self.vlan = vlan
 		self.endips = []
 		self.nameToEndIps = {}
@@ -218,8 +218,8 @@ class L2Switch(Node):
 # XXX Static Route could change in future
 class Host(Node):
 
-	def __init__( self, NODInfo, vlan, user, pwd, tunneling):
-		Node.__init__(self, NODInfo, user, pwd)
+	def __init__( self, name, mgt_ip, intfs, vlan, user, pwd, tunneling):
+		Node.__init__(self, name, mgt_ip, intfs, user, pwd)
 		self.vlan = vlan
 		self.endips = []
 		self.nameToEndIps = {}
@@ -340,8 +340,8 @@ class Host(Node):
 	
 class Controller(Host):
 
-	def __init__( self, NODInfo, vlan, port, user, pwd, tunneling):
-		Host.__init__(self, NODInfo, vlan, user, pwd, tunneling)
+	def __init__( self, name, mgt_ip, intfs, vlan, port, user, pwd, tunneling):
+		Host.__init__(self, name, mgt_ip, intfs, vlan, user, pwd, tunneling)
 		self.port = port
 		self.ips = []
 
@@ -357,8 +357,8 @@ class Controller(Host):
 	
 class IPHost(Host):
 		
-	def __init__(self, NODInfo, vlan, user, pwd, tunneling, loopback):
-		Host.__init__(self, NODInfo, vlan, user, pwd, tunneling)
+	def __init__(self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback):
+		Host.__init__(self, name, mgt_ip, intfs, vlan, user, pwd, tunneling)
 		self.loopback = LoIntf(ip=loopback)
 		self.staticroutes = None
 		self.ospfnets = []
@@ -399,8 +399,8 @@ class IPHost(Host):
 
 class Router(IPHost):
 
-	def __init__( self, NODInfo, vlan, user, pwd, tunneling, loopback):
-		IPHost.__init__(self, NODInfo, vlan, user, pwd, tunneling, loopback)
+	def __init__( self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback):
+		IPHost.__init__(self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback)
 	
 	def addIntf(self, param):
 		if len(param) != 8:
@@ -473,8 +473,8 @@ class Oshi(IPHost):
 
 	dpidLen = 16
 
-	def __init__( self, NODInfo, vlan, user, pwd, tunneling, loopback, OF_V):
-		IPHost.__init__(self, NODInfo, vlan, user, pwd, tunneling, loopback)
+	def __init__( self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback, OF_V):
+		IPHost.__init__(self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback)
 		self.dpid = self.loopbackDpid(self.loopback.ip,"00000000")
 		self.vis = []
 		self.nameToVis = {}

@@ -40,20 +40,20 @@ class TestbedFactory(object):
 	def __init__(self, verbose):
 		self.verbose = verbose
 
-	def getTestbedOSHI(self, type_testbed, type_tunnel):
+	def getTestbedOSHI(self, type_testbed, type_tunnel, mapped, vlan):
 		if type_testbed == "OFELIA":
-			return TestbedOSHIOFELIA(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+			return TestbedOSHIOFELIA(type_tunnel, mapped, vlan, "10.0.0.0/255.0.0.0", self.verbose)
 		elif type_testbed == "GOFF":
-			return TestbedOSHIGOFF(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+			return TestbedOSHIGOFF(type_tunnel, mapped, vlan, "10.0.0.0/255.0.0.0", self.verbose)
 		else:
 			print "Testbed %s Not Supported...Exit" %(type_testbed)
 			sys.exit(-1)
 
 	def getTestbedRouter(self, type_testbed, type_tunnel):
 		if type_testbed == "OFELIA":
-			return TestbedRouterOFELIA(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+			return TestbedRouterOFELIA(type_tunnel, mapped, vlan, "10.0.0.0/255.0.0.0", self.verbose)
 		elif type_testbed == "GOFF":
-			return TestbedRouterGOFF(type_tunnel, "10.0.0.0/255.0.0.0", self.verbose)
+			return TestbedRouterGOFF(type_tunnel, mapped, vlan, "10.0.0.0/255.0.0.0", self.verbose)
 		else:
 			print "Testbed %s Not Supported...Exit" %(type_testbed)
 			sys.exit(-1)
@@ -77,7 +77,7 @@ class Testbed(object):
 
 class TestbedRouter(Testbed):
 	
-	def __init__(self):
+	def __init__(self, mapped, vlan):
 		Testbed.__init__(self)
 		self.routs = []
 		self.l2sws = []
@@ -88,19 +88,32 @@ class TestbedRouter(Testbed):
 		self.l2swinfo = []
 		self.ospfBase = 1
 		self.nameToOSPFNet = {}
+		self.mapped = mapped
+		self.vlan = vlan
 
 	def addRouter(self, nodeproperties, name=None):
-		if len(self.routerinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Router"
-			sys.exit(-2)
+
+		mgt_ip = None
+		intfs = []
+		loopback = None
 
 		if not name:
 			name = self.newRoutName()
 
-		rou = self.routerinfo[0]
-		rou.name = name
-		self.routerinfo.remove(rou)
-		router = Router(rou, self.vlan, self.user, self.pwd, self.tunneling, nodeproperties.loopback)
+		if self.mapped == False:
+			if len(self.routerinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of Router"
+				sys.exit(-2)
+			info = self.routerinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs
+			self.routerinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+		loopback = nodeproperties['loopback']
+		router = Router(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback)
 		self.routs.append(router)
 		self.nameToNode[router.name] = router
 		return router
@@ -110,18 +123,28 @@ class TestbedRouter(Testbed):
 		name = "rou%s" % index
 		return name
 
-	def addL2Switch(self, name=None):
-		if len(self.l2swsinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of L2Sw"
-			sys.exit(-2)
+	def addL2Switch(self, nodeproperties, name=None):
 
+		mgt_ip = None
+		intfs = []
+		
 		if not name:
 			name = self.newL2swName()
 
-		l2sw = self.l2swsinfo[0]
-		l2sw.name = name
-		self.l2swsinfo.remove(l2sw)
-		l2switch = L2Switch(l2sw, self.vlan, self.user, self.pwd, self.tunneling)
+		if self.mapped == False:
+			if len(self.l2swsinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of L2Sw"
+				sys.exit(-2)
+			info = self.l2swsinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs
+			self.l2swsinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+		
+		l2switch = L2Switch(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling)
 		self.l2sws.append(l2switch)
 		self.nameToNode[l2switch.name] = l2switch
 		return l2switch
@@ -131,18 +154,28 @@ class TestbedRouter(Testbed):
 		name = "swi%s" % index
 		return name
 
-	def addEuh(self, name=None):
-		if len(self.euhsinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Host"
-			sys.exit(-2)
+	def addEuh(self, nodeproperties, name=None):
+
+		mgt_ip = None
+		intfs = []
 
 		if not name:
 			name = self.newEuhName()
 
-		euh = self.euhsinfo[0]
-		euh.name = name
-		self.euhsinfo.remove(euh)
-		euh = Host(euh, self.vlan, self.user, self.pwd, self.tunneling)
+		if self.mapped == False:
+			if len(self.euhsinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of Host"
+				sys.exit(-2)
+			info = self.euhsinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs
+			self.euhsinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+
+		euh = Host(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling)
 		self.euhs.append(euh)
 		self.nameToNode[euh.name] = euh
 		return euh
@@ -217,7 +250,7 @@ class TestbedOSHI( Testbed ):
 
 	OF_V = "OpenFlow13"
 	
-	def __init__(self):
+	def __init__(self, mapped, vlan):
 		Testbed.__init__(self)
 		self.cr_oshs = []
 		self.pe_oshs = []
@@ -242,19 +275,32 @@ class TestbedOSHI( Testbed ):
 		self.vsfs = []
 		self.customer_to_vtepallocator = {}
 		self.cer_to_customer = {}
+		self.mapped = mapped
+		self.vlan = vlan
 
 	def addCrOshi(self, nodeproperties, name=None):
-		if len(self.crosinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Core Oshi"
-			sys.exit(-2)
+
+		mgt_ip = None
+		intfs = []
+		loopback = None
 
 		if not name:
 			name = self.newCrName()
 
-		cro = self.crosinfo[0]
-		cro.name = name
-		self.crosinfo.remove(cro)
-		oshi = Oshi(cro, self.vlan, self.user, self.pwd, self.tunneling, nodeproperties.loopback, self.OF_V)
+		if self.mapped == False:
+			if len(self.crosinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of Core Oshi"
+				sys.exit(-2)
+			info = self.crosinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs
+			self.crosinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+		loopback = nodeproperties['loopback']
+		oshi = Oshi(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback, self.OF_V)
 		self.cr_oshs.append(oshi)
 		self.nameToNode[oshi.name] = oshi
 		return oshi
@@ -265,17 +311,28 @@ class TestbedOSHI( Testbed ):
 		return name	
 
 	def addPeOshi(self, nodeproperties, name=None):
-		if len(self.peosinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Provider Edge Oshi"
-			sys.exit(-2)
 
+		mgt_ip = None
+		intfs = []
+		loopback = None
+		
 		if not name:
 			name = self.newPeName()
 
-		peo = self.peosinfo[0]
-		peo.name = name
-		self.peosinfo.remove(peo)
-		oshi = Oshi(peo, self.vlan, self.user, self.pwd, self.tunneling, nodeproperties.loopback, self.OF_V)
+		if self.mapped == False:
+			if len(self.peosinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of Provider Edge Oshi"
+				sys.exit(-2)
+			info = self.peosinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs
+			self.peosinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+		loopback = nodeproperties['loopback']
+		oshi = Oshi(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback, self.OF_V)
 		self.pe_oshs.append(oshi)
 		self.nameToNode[oshi.name] = oshi
 		return oshi
@@ -285,18 +342,29 @@ class TestbedOSHI( Testbed ):
 		name = "peo%s" % index
 		return name		
 	
-	def addController(self, port, name=None):
-		if len(self.ctrlsinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Controller"
-			sys.exit(-2)
+	def addController(self, nodeproperties, name=None):
+
+		mgt_ip = None
+		intfs = []
+		tcp_port = None
 
 		if not name:
 			name = self.newCtrlName()
-
-		ctrl = self.ctrlsinfo[0]
-		ctrl.name = name
-		self.ctrlsinfo.remove(ctrl)
-		ctrl = Controller(ctrl, self.vlan, port, self.user, self.pwd, self.tunneling)
+				
+		if self.mapped == False:
+			if len(self.ctrlsinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of Controller"
+				sys.exit(-2)
+			info = self.ctrlsinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs		
+			self.ctrlsinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+		tcp_port = nodeproperties['tcp_port']
+		ctrl = Controller(name, mgt_ip, intfs, self.vlan, tcp_port, self.user, self.pwd, self.tunneling)
 		self.ctrls.append(ctrl)
 		self.nameToNode[ctrl.name] = ctrl
 		return ctrl
@@ -306,18 +374,26 @@ class TestbedOSHI( Testbed ):
 		name = "ctr%s" % index
 		return name
 
-	def addCer(self, cid, name=None):
-		if len(self.cersinfo) == 0:
-			print "Error The Testbed Provided Is Not Enough Big For The Creation Of Host"
-			sys.exit(-2)
+	def addCer(self, cid, nodeproperties, name=None):
+		mgt_ip = None
+		intfs = []
 
 		if not name:
 			name = self.newCerName()
-
-		cer = self.cersinfo[0]
-		cer.name = name
-		self.cersinfo.remove(cer)
-		cer = Host(cer, self.vlan, self.user, self.pwd, self.tunneling)
+		
+		if self.mapped == False:		
+			if len(self.cersinfo) == 0:
+				print "Error The Testbed Provided Is Not Enough Big For The Creation Of Host"
+				sys.exit(-2)
+			info = self.cersinfo[0]
+			mgt_ip = info.mgt_ip
+			intfs = info.intfs
+			self.cersinfo.remove(info)
+		else:
+			info = nodeproperties['vm']
+			mgt_ip = info['mgt_ip']
+			intfs = info['interfaces']
+		cer = Host(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling)
 		self.cers.append(cer)
 		self.nameToNode[cer.name] = cer
 
@@ -651,14 +727,15 @@ class TestbedOSHI( Testbed ):
 
 # XXX configure() depends On Luca Prete' s Bash Script
 class TestbedRouterGOFF( TestbedRouter ):
-	def __init__(self, tunneling, ipnet, verbose=True):
-		TestbedRouter.__init__(self)
-		self.parser = MappingParserRouterTestbed(path_json = "router_goff_mapping.map", verbose = verbose)
-		(self.routerinfo, self.l2swsinfo, self.euhsinfo) = self.parser.getNodesInfo()
-		self.vlan = self.parser.vlan
+	def __init__(self, tunneling, mapped, vlan, ipnet, verbose=True):
+		TestbedRouter.__init__(self, mapped, vlan)
+		if self.mapped == False:
+			self.parser = MappingParserRouterTestbed(path_json = "router_goff_mapping.map", verbose = verbose)
+			(self.routerinfo, self.l2swsinfo, self.euhsinfo) = self.parser.getNodesInfo()
+			self.vlan = self.parser.vlan
 		self.verbose = verbose
-		self.user = self.parser.user
-		self.pwd = self.parser.pwd
+		#self.user = self.parser.user
+		#self.pwd = self.parser.pwd
 		self.ipnet = ipnet
 		self.tunneling = tunneling	
 	
@@ -683,14 +760,15 @@ class TestbedRouterGOFF( TestbedRouter ):
 # XXX configure() depends On Luca Prete' s Bash Script
 class TestbedOSHIGOFF( TestbedOSHI ):
 	
-	def __init__(self, tunneling, ipnet, verbose=True):
-		TestbedOSHI.__init__(self)
-		self.parser = MappingParserOSHITestbed(path_json = "oshi_goff_mapping.map", verbose = verbose)
-		(self.crosinfo, self.peosinfo, self.ctrlsinfo, self.cersinfo) = self.parser.getNodesInfo()
-		self.vlan = self.parser.vlan
+	def __init__(self, tunneling, mapped, vlan, ipnet, verbose=True):
+		TestbedOSHI.__init__(self, mapped, vlan)
+		if self.mapped == False:
+			self.parser = MappingParserOSHITestbed(path_json = "oshi_goff_mapping.map", verbose = verbose)
+			(self.crosinfo, self.peosinfo, self.ctrlsinfo, self.cersinfo) = self.parser.getNodesInfo()
+			self.vlan = self.parser.vlan
 		self.verbose = verbose
-		self.user = self.parser.user
-		self.pwd = self.parser.pwd
+		#self.user = self.parser.user
+		#self.pwd = self.parser.pwd
 		self.ipnet = ipnet
 		self.tunneling = tunneling
 
@@ -728,11 +806,12 @@ class TestbedOSHIGOFF( TestbedOSHI ):
 class TestbedRouterOFELIA( TestbedRouter ):
 
 	# Init Function
-	def __init__( self, tunneling, ipnet, verbose=True):	
-		TestbedRouter.__init__(self)
-		self.parser = MappingParserRouterTestbed(path_json = "router_ofelia_mapping.map", verbose = verbose)
-		(self.routerinfo, self.l2swsinfo, self.euhsinfo) = self.parser.getNodesInfo()
-		self.vlan = self.parser.vlan
+	def __init__( self, tunneling, mapped, vlan, ipnet, verbose=True):	
+		TestbedRouter.__init__(self, mapped, vlan)
+		if self.mapped == False:
+			self.parser = MappingParserRouterTestbed(path_json = "router_ofelia_mapping.map", verbose = verbose)
+			(self.routerinfo, self.l2swsinfo, self.euhsinfo) = self.parser.getNodesInfo()
+			self.vlan = self.parser.vlan
 		self.verbose = verbose
 		self.ipnet = ipnet
 		#XXX START MGMT INFO
@@ -740,8 +819,8 @@ class TestbedRouterOFELIA( TestbedRouter ):
 		self.mgmtgw = "10.216.32.1"
 		self.mgmtintf = "eth0"
 		#XXX END MGMT INFO		
-		self.user = self.parser.user
-		self.pwd = self.parser.pwd
+		#self.user = self.parser.user
+		#self.pwd = self.parser.pwd
 		self.tunneling = tunneling
 
 	def configure(self):
@@ -770,11 +849,12 @@ class TestbedRouterOFELIA( TestbedRouter ):
 class TestbedOSHIOFELIA( TestbedOSHI ):
 
 	# Init Function
-	def __init__( self, tunneling, ipnet, verbose=True):
-		TestbedOSHI.__init__(self)
-		self.parser = MappingParserOSHITestbed(path_json = "oshi_ofelia_mapping.map", verbose = verbose)
-		(self.crosinfo, self.peosinfo, self.ctrlsinfo, self.cersinfo) = self.parser.getNodesInfo()
-		self.vlan = self.parser.vlan
+	def __init__( self, tunneling, mapped, vlan, ipnet, verbose=True):
+		TestbedOSHI.__init__(self, mapped, vlan)
+		if self.mapped == False:
+			self.parser = MappingParserOSHITestbed(path_json = "oshi_ofelia_mapping.map", verbose = verbose)
+			(self.crosinfo, self.peosinfo, self.ctrlsinfo, self.cersinfo) = self.parser.getNodesInfo()
+			self.vlan = self.parser.vlan
 		self.verbose = verbose
 		self.ipnet = ipnet
 		#XXX START MGMT INFO
@@ -782,8 +862,8 @@ class TestbedOSHIOFELIA( TestbedOSHI ):
 		self.mgmtgw = "10.216.32.1"
 		self.mgmtintf = "eth0"
 		#XXX END MGMT INFO		
-		self.user = self.parser.user
-		self.pwd = self.parser.pwd
+		#self.user = self.parser.user
+		#self.pwd = self.parser.pwd
 		self.tunneling = tunneling
 	
 	def configure(self):
