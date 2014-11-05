@@ -687,6 +687,10 @@ class TestbedOSHI( Testbed ):
 		vsfcfg = {}
 		vsfss = []
 
+		coexFactory = CoexFactory()
+		coex = coexFactory.getCoex(self.coex['coex_type'], self.coex['coex_data'], [], [], "", self.OF_V)
+		vsfcfg['tableIP'] = coex.tableIP
+
 		for peo in self.pe_oshs:
 			data = {}
 			vm = peo.mgt_ip

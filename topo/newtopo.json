@@ -2,21 +2,21 @@
 	"vertices": {
 		"cro1": {
 			"pos": {
-				"x": 606.0021276595745,
-				"y": 144.82758620689657
+				"x": 447.5712701123744,
+				"y": 201.83566527476768
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.07745681656787057,
+				"y": 0.010405125480627914
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "OSHI-CR",
-				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.49",
-						"interfaces":[
+				"property": {
+					"loopback": "",
+					"vm": {
+						"mgt_ip": "62.40.110.49",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -25,21 +25,21 @@
 		},
 		"cro2": {
 			"pos": {
-				"x": 402,
-				"y": 218
+				"x": 512.4320311451525,
+				"y": 278.47590858385854
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.06508687780334749,
+				"y": 0.01517428904894988
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "OSHI-CR",
-				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.16",
-						"interfaces":[
+				"property": {
+					"loopback": "",
+					"vm": {
+						"mgt_ip": "62.40.110.16",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -48,21 +48,21 @@
 		},
 		"peo3": {
 			"pos": {
-				"x": 662.2258358662615,
-				"y": 308.9655172413793
+				"x": 529.7940777730879,
+				"y": 180.02052102021247
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.07701991485657766,
+				"y": 0.015071531627545154
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "OSHI-PE",
-				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.47",
-						"interfaces":[
+				"property": {
+					"loopback": "",
+					"vm": {
+						"mgt_ip": "62.40.110.47",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -71,21 +71,21 @@
 		},
 		"cro4": {
 			"pos": {
-				"x": 235.4367781155015,
-				"y": 360
+				"x": 432.60515428536513,
+				"y": 315.24733728296036
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.06004972618099985,
+				"y": 0.007093226566088073
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "OSHI-CR",
-				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.149",
-						"interfaces":[
+				"property": {
+					"loopback": "",
+					"vm": {
+						"mgt_ip": "62.40.110.149",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -94,21 +94,21 @@
 		},
 		"peo5": {
 			"pos": {
-				"x": 214.9917933130699,
-				"y": 166.89655172413794
+				"x": 366.5939487948204,
+				"y": 232.25983363478247
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.07294167660166218,
+				"y": -0.00027497225997333286
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "OSHI-PE",
-				"property": { 
-					"loopback": "", 
-					"vm":{
-						"mgt_ip":"62.40.110.49",
-						"interfaces":[
+				"property": {
+					"loopback": "",
+					"vm": {
+						"mgt_ip": "62.40.110.8",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -117,20 +117,20 @@
 		},
 		"cer6": {
 			"pos": {
-				"x": 105.1,
-				"y": 40
+				"x": 222.21693625118934,
+				"y": 150
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.08489056874369277,
+				"y": -0.0007433852898492688
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "CE",
-				"property": { 
-					"vm":{
-						"mgt_ip":"62.40.110.52",
-						"interfaces":[
+				"property": {
+					"vm": {
+						"mgt_ip": "62.40.110.52",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -139,20 +139,20 @@
 		},
 		"cer7": {
 			"pos": {
-				"x": 945.9,
-				"y": 304.82758620689657
+				"x": 487.8812785008839,
+				"y": 65.22930743919143
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.07879286733519864,
+				"y": 0.006582521643643396
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "CE",
-				"property": { 
-					"vm":{
-						"mgt_ip":"62.40.110.20",
-						"interfaces":[
+				"property": {
+					"vm": {
+						"mgt_ip": "62.40.110.20",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -161,21 +161,21 @@
 		},
 		"ctr8": {
 			"pos": {
-				"x": 427,
-				"y": 282
+				"x": 626.5302585310566,
+				"y": 323.35242459550176
 			},
 			"v": {
-				"x": 0,
-				"y": 0
+				"x": 0.05741970427674892,
+				"y": 0.012158565891445261
 			},
 			"vertex_info": {
 				"frozen": false,
 				"node-type": "OF Controller",
 				"property": {
-					"tcp_port":"6633",
-					"vm":{
-						"mgt_ip":"62.40.110.49",
-						"interfaces":[
+					"tcp_port": "6633",
+					"vm": {
+						"mgt_ip": "62.40.110.51",
+						"interfaces": [
 							"eth1"
 						]
 					}
@@ -264,14 +264,6 @@
 				}
 			]
 		},
-		"cer6&&cer7": {
-			"links": [
-				{
-					"link_label": "ciao",
-					"link-type": "Vll"
-				}
-			]
-		},
 		"ctr8&&cro2": {
 			"links": [
 				{
@@ -279,13 +271,21 @@
 					"link-type": "Data"
 				}
 			]
+		},
+		"cer6&&cer7": {
+			"links": [
+				{
+					"link_label": "ciao",
+					"link-type": "Vll"
+				}
+			]
 		}
 	},
 	"graph_parameters": {
 		"tunneling": "VXLAN",
-		"testbed": "MININET",
+		"vlan": "700",
 		"mapped": true,
-		"vlan":"0",
-		"generated":false
+		"generated": false,
+		"testbed": "GOFF"
 	}
 }

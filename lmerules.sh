@@ -12,7 +12,7 @@
 #
 # LME bootstrap rules, each line is an Open vSwitch rule 
 ################################################################ ISTRUCTIONS END ###############################################################
-# 62.40.110.49 - start
+# 62.40.110.149 - start
 # COEXH - start
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8847,actions=goto_table:1"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8848,actions=goto_table:1"
@@ -25,7 +25,7 @@ ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x8942,action=controller"
 # COEXH - end
-# 62.40.110.49 - end
+# 62.40.110.149 - end
 # 62.40.110.16 - start
 # COEXH - start
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8847,actions=goto_table:1"
@@ -46,7 +46,7 @@ ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301
 # INGRB - start
 # INGRB - end
 # 62.40.110.16 - end
-# 62.40.110.149 - start
+# 62.40.110.49 - start
 # COEXH - start
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8847,actions=goto_table:1"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8848,actions=goto_table:1"
@@ -59,27 +59,7 @@ ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x8942,action=controller"
 # COEXH - end
-# 62.40.110.149 - end
-# 62.40.110.47 - start
-# COEXH - start
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8847,actions=goto_table:1"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8848,actions=goto_table:1"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap1,action=output:vi1"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi1,action=output:tap1"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap2,action=output:vi2"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi2,action=output:tap2"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap3,action=output:vi3"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi3,action=output:tap3"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap4,action=output:vi4"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi4,action=output:tap4"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap5,action=output:vi5"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi5,action=output:tap5"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller"
-ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x8942,action=controller"
-# COEXH - end
-# INGRB - start
-# INGRB - end
-# 62.40.110.47 - end
+# 62.40.110.49 - end
 # 62.40.110.8 - start
 # COEXH - start
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8847,actions=goto_table:1"
@@ -94,9 +74,41 @@ ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi4,action=output:tap4"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap5,action=output:vi5"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi5,action=output:tap5"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap6,action=output:vi6"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi6,action=output:tap6"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller"
 ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x8942,action=controller"
 # COEXH - end
 # INGRB - start
 # INGRB - end
 # 62.40.110.8 - end
+# 62.40.110.47 - start
+# COEXH - start
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8847,actions=goto_table:1"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=32768,dl_type=0x8848,actions=goto_table:1"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap1,action=output:vi1"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi1,action=output:tap1"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap2,action=output:vi2"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi2,action=output:tap2"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap3,action=output:vi3"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi3,action=output:tap3"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap4,action=output:vi4"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi4,action=output:tap4"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap5,action=output:vi5"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi5,action=output:tap5"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap6,action=output:vi6"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi6,action=output:tap6"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap7,action=output:vi7"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi7,action=output:tap7"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap8,action=output:vi8"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi8,action=output:tap8"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=tap9,action=output:vi9"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=300,in_port=vi9,action=output:tap9"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x88cc,action=controller"
+ovs-ofctl -O OpenFlow13 add-flow br-dreamer "table=0,hard_timeout=0,priority=301,dl_type=0x8942,action=controller"
+# COEXH - end
+# INGRB - start
+# INGRB - end
+# INGRB - start
+# INGRB - end
+# 62.40.110.47 - end

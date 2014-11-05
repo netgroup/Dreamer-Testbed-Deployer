@@ -677,6 +677,7 @@ class Oshi(IPHost):
 			self.vsf_to_port[vsfname] = index
 		else:
 			index = index + 2
+			self.vsf_to_port[vsfname] = index
 		intf = "r%s-eth%s" %(vsfname, index)
 		return intf
 
@@ -696,7 +697,7 @@ class VSF(object):
 		self.pws = []		
 
 	def addPW( self, peo_tap, local_vtep, remote_vtep):
-		pw = { 'cer_intf':peo_tap.name, 'local_vtep':local_vtep.__str__(), 'remote_vtep':remote_vtep.__str__() }
+		pw = { 'cer_intf':peo_tap.name, 'local_vtep':{'ip':local_vtep.IP, 'mac':local_vtep.MAC}, 'remote_vtep':{'ip':remote_vtep.IP, 'mac':remote_vtep.MAC} }
 		self.pws.append(pw)
 	
 	def serialize( self ):
