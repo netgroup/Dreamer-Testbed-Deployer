@@ -34,6 +34,7 @@ from ingress_classification import *
 from coexistence_mechanisms import *
 import copy
 import os
+from collections import defaultdict
 
 class TestbedFactory(object):
 
@@ -49,11 +50,11 @@ class TestbedFactory(object):
 			print "Testbed %s Not Supported...Exit" %(type_testbed)
 			sys.exit(-1)
 
-	def getTestbedRouter(self, type_testbed, type_tunnel):
+	def getTestbedRouter(self, type_testbed, type_tunnel, vlan):
 		if type_testbed == "OFELIA":
-			return TestbedRouterOFELIA(type_tunnel, mapped, vlan, "10.0.0.0/255.0.0.0", self.verbose)
+			return TestbedRouterOFELIA(type_tunnel, False, vlan, "10.0.0.0/255.0.0.0", self.verbose)
 		elif type_testbed == "GOFF":
-			return TestbedRouterGOFF(type_tunnel, mapped, vlan, "10.0.0.0/255.0.0.0", self.verbose)
+			return TestbedRouterGOFF(type_tunnel, False, vlan, "10.0.0.0/255.0.0.0", self.verbose)
 		else:
 			print "Testbed %s Not Supported...Exit" %(type_testbed)
 			sys.exit(-1)
@@ -278,6 +279,30 @@ class TestbedOSHI( Testbed ):
 		self.mapped = mapped
 		self.vlan = vlan
 
+		self.cluster_to_ctrl = defaultdict(list)
+		self.cluster_to_nodes = defaultdict(list)
+		self.nodes_to_cluster = {}
+
+	def manageOSHIproperties(self, properties, name, ctrl):
+		exist = properties.get("domain-oshi", None)
+		if not exist:
+			print "Error domain-oshi properties cannot be found"
+			sys.exit(-2)
+		oshi_properties = properties["domain-oshi"]
+		exist = oshi_properties.get("layer-Control", None)
+		if not exist:
+			print "Error layer-Control properties cannot be found"
+			sys.exit(-2)
+		control_properties = oshi_properties["layer-Control"]
+		cluster_id = control_properties["cluster_id"]
+		if cluster_id == "":
+			cluster_id = "default"
+		if ctrl:
+			self.cluster_to_ctrl[cluster_id].append(name)
+		else:
+			self.cluster_to_nodes[cluster_id].append(name)
+			self.nodes_to_cluster[name] = cluster_id
+
 	def addCrOshi(self, nodeproperties, name=None):
 
 		mgt_ip = None
@@ -299,8 +324,9 @@ class TestbedOSHI( Testbed ):
 			info = nodeproperties['vm']
 			mgt_ip = info['mgt_ip']
 			intfs = info['interfaces']
+		self.manageOSHIproperties(nodeproperties, name, False)
 		loopback = nodeproperties['loopback']
-		oshi = Oshi(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback, self.OF_V)
+		oshi = Oshi(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback, self.OF_V, True, self.nodes_to_cluster[name])
 		self.cr_oshs.append(oshi)
 		self.nameToNode[oshi.name] = oshi
 		return oshi
@@ -331,8 +357,9 @@ class TestbedOSHI( Testbed ):
 			info = nodeproperties['vm']
 			mgt_ip = info['mgt_ip']
 			intfs = info['interfaces']
+		self.manageOSHIproperties(nodeproperties, name, False)
 		loopback = nodeproperties['loopback']
-		oshi = Oshi(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback, self.OF_V)
+		oshi = Oshi(name, mgt_ip, intfs, self.vlan, self.user, self.pwd, self.tunneling, loopback, self.OF_V, False, self.nodes_to_cluster[name])
 		self.pe_oshs.append(oshi)
 		self.nameToNode[oshi.name] = oshi
 		return oshi
@@ -363,6 +390,7 @@ class TestbedOSHI( Testbed ):
 			info = nodeproperties['vm']
 			mgt_ip = info['mgt_ip']
 			intfs = info['interfaces']
+		self.manageOSHIproperties(nodeproperties, name, True)
 		tcp_port = nodeproperties['tcp_port']
 		ctrl = Controller(name, mgt_ip, intfs, self.vlan, tcp_port, self.user, self.pwd, self.tunneling)
 		self.ctrls.append(ctrl)
@@ -410,7 +438,33 @@ class TestbedOSHI( Testbed ):
 		name = "cer%s" % index
 		return name
 
+	def clusterAllocation(self):
+
+		for cluster, controllers in self.cluster_to_ctrl.iteritems():
+			ips = []
+			ports = []
+
+			for ctrl in controllers:
+				ctrl = self.nameToNode[ctrl]
+				if len(ctrl.ips) > 0:
+					ips.append(ctrl.ips[0])
+					ports.append(ctrl.port)
+			
+			for temp_cluster, nodes in self.cluster_to_nodes.iteritems():
+				if cluster == temp_cluster:
+					trovato = True
+					break
+
+			if trovato:
+				if len(ips) > 0:
+					for node in nodes:
+						oshi = self.nameToNode[node]
+						oshi.setControllers(ips, ports)
+				else:
+					print "Warning No Controller Added - Information Will Not Be Generated"
+				
 	def completeAllocation(self):
+
 		ips = []
 		ports = []
 		for ctrl in self.ctrls:
@@ -778,7 +832,7 @@ class TestbedOSHIGOFF( TestbedOSHI ):
 
 	
 	def configure(self):
-		self.completeAllocation()
+		self.clusterAllocation()
 		header =open('header.txt','r')
 		testbed = open('testbed.sh','w')
 		lines = header.readlines()

@@ -473,9 +473,18 @@ class Oshi(IPHost):
 
 	dpidLen = 16
 
-	def __init__( self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback, OF_V):
+	def __init__( self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback, OF_V, CR, cluster_id):
 		IPHost.__init__(self, name, mgt_ip, intfs, vlan, user, pwd, tunneling, loopback)
-		self.dpid = self.loopbackDpid(self.loopback.ip,"00000000")
+
+		if cluster_id == "default":
+			cluster_id = "0"
+		cluster_id = int(cluster_id)
+		if CR:
+			cluster_id = cluster_id + 128	
+	
+		extrainfo = '%02x000000' % cluster_id
+
+		self.dpid = self.loopbackDpid(self.loopback.ip, extrainfo)
 		self.vis = []
 		self.nameToVis = {}
 		self.ctrls = []
@@ -485,6 +494,7 @@ class Oshi(IPHost):
 		self.vsf_to_port = {}
 		self.pwtaps = []
 		self.pwtapBase = 1
+		self.CR = CR
 
 	def loopbackDpid(self, loopback, extrainfo):
 		splitted_loopback = loopback.split('.')
@@ -600,6 +610,12 @@ class Oshi(IPHost):
 	def pwtapsSerialization(self):
 		return "declare -a PWTAP=(" + " ".join("%s" % pwtap.name for pwtap in self.pwtaps) + ")\n"
 
+	def vitapsSerialization(self):
+		vitaps = []
+		for i in range(len(self.vis)+1, (len(self.vis)+21)):		
+			vitaps.append("vi%s" % str(i))
+		return "declare -a VITAP=(" + " ".join("%s" % vitap for vitap in vitaps) + ")\n"
+
 	def configure(self, params):
 		ipbase = params[0]
 		testbed = open('testbed.sh','a')
@@ -626,6 +642,8 @@ class Oshi(IPHost):
 		testbed.write(self.visSerialization())
 		for vi in self.vis:
 			testbed.write(vi.serialize())
+		if len(self.ingressfuncs) > 0:
+			testbed.write(self.vitapsSerialization())
 		testbed.write(self.ospfnetsSerialization())
 		for net in self.ospfnets:
 			testbed.write(net.serialize())
@@ -665,6 +683,19 @@ class Oshi(IPHost):
 			lmerules.write("# %s - start\n" % ingress.type)
 			lmerules.write(ingress.serialize())
 			lmerules.write("# %s - end\n" % ingress.type)
+
+		"""
+		if self.name == "peo5":
+			lmerules.write("# FAKE - start\n")
+			i = 0
+			z = 0
+			while z < (i*1000):
+				lmerules.write("ovs-ofctl add-flow %s \"table=%s,hard_timeout=0,priority=%s,in_port=%s,action=output:%s\"\n" %("br-dreamer", 0, 300, (z+100), (z+101)))
+				lmerules.write("ovs-ofctl add-flow %s \"table=%s,hard_timeout=0,priority=%s,in_port=%s,action=output:%s\"\n" %("br-dreamer", 0, 300, (z+101), (z+100)))
+				z = z + 2
+			lmerules.write("# FAKE - end\n")
+		"""
+
 		lmerules.write("# %s - end\n" % self.mgt_ip)
 		lmerules.close()
 

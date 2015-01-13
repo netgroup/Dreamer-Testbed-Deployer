@@ -56,3 +56,5 @@ docs/_build/
 *.pyc
 cemetery
 *.old
+*.sh
+*.cfg

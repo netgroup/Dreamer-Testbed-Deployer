@@ -30,7 +30,7 @@ import argparse
 import sys
 import os
 
-parser_path = "../Dreamer-Topology-Parser-and-Validator/"
+parser_path = "" #"../Dreamer-Topology-Parser-and-Validator/"
 if parser_path == "":
 	print "Error Set Environment Variable At The Beginning Of File"
 	sys.exit(-2)
@@ -46,7 +46,7 @@ from testbed_deployer_utils import *
 
 # XXX Build Topology From topo.json generated through TopologyDesigner And Build Configuration File For Classification Function
 # and for VLL pusher	
-def topo(topology, testbed):
+def topo(topology):
 
 	verbose = True
 	if verbose:
@@ -54,6 +54,8 @@ def topo(topology, testbed):
 	parser = TopoParser(topology, verbose = False)
 	(ppsubnets, l2subnets) = parser.getsubnets()
 	vlls = parser.getVLLs()
+	pws = parser.getPWs()
+	testbed = parser.testbed
 	# XXX
 	if parser.generated == False:
 		if verbose:
@@ -82,14 +84,12 @@ def topo(topology, testbed):
 		vlls_properties = []
 		for vll in vlls:
 			vlls_properties.append(generator.getVLLsProperties(vll))
-
-		#XXX Da eliminare
-		pws = []
+		
+		if verbose:
+			print "*** Build PWs Properties"
 		pws_properties = []
-		for vll in vlls:
-			pws.append(vll)
-			pws_properties.append(generator.getVLLsProperties(vll))
-			
+		for pw in pws:
+			pws_properties.append(generator.getVLLsProperties(pw))
 			
 
 	set_cr_oshis = parser.cr_oshis
@@ -152,20 +152,20 @@ def topo(topology, testbed):
 				print "*** Connect", node1, "To", node2
 				print "*** Link Properties", pp_properties[i][0]
 			i = i + 1
-
+	
 	i = 0
 	for vll in vlls:
 		testbed.addVLL(vll[0], vll[1], vlls_properties[i])
 		if verbose:			
 			print "*** VLLs Properties", vlls_properties[i]
 		i = i + 1	
-
+	
 	i = 0
 	for pw in pws:
 		testbed.addPW(pw[0], pw[1], pws_properties[i])
 		if verbose:			
 			print "*** PWs Properties", pws_properties[i]
-		i = i + 1		
+		i = i + 1	
 
 	print "*** Generate testbed.sh"
 	testbed.configure()
@@ -181,15 +181,13 @@ def topo(topology, testbed):
 def parse_cmd_line():
 	parser = argparse.ArgumentParser(description='Testbed Deployer')
 	parser.add_argument('--topology', dest='topoInfo', action='store', default='topo:topo1.json', help='topo:param see README for further details')
-	parser.add_argument('--testbed', dest='testbedInfo', action='store', default='testbed:OFELIA', help='testbed:param see README for further details')
 	args = parser.parse_args()	
 	if len(sys.argv)==1:
     		parser.print_help()
     		sys.exit(1)
 	topo_data = args.topoInfo	
-	testbed_data = args.testbedInfo
-	return (topo_data, testbed_data)
+	return (topo_data)
 
 if __name__ == '__main__':
-	(topology, testbed) = parse_cmd_line()
-	topo(topology, testbed)
+	(topology) = parse_cmd_line()
+	topo(topology)
