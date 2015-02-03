@@ -52,7 +52,7 @@ def topo(topology):
 	if verbose:
 		print "*** Build Topology From Parsed File"
 	parser = TopoParser(topology, verbose = False)
-	(ppsubnets, l2subnets) = parser.getsubnets()
+	ppsubnets = parser.getsubnets()
 	vlls = parser.getVLLs()
 	pws = parser.getPWs()
 	testbed = parser.testbed
