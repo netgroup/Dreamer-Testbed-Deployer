@@ -1,12 +1,14 @@
-![Alt text](repo_data/dreamer-logo.png "Optional title")
+![OSHI and DREAMER logos](http://netgroup.uniroma2.it/twiki/pub/Oshi/WebHome/dreamer-oshi-logo-github.png "http://netgroup.uniroma2.it/OSHI")
 
 Dreamer-Testbed-Deployer
 ========================
 
-Testbed Deployer For Dreamer Project (GÉANT Open Call)
+Testbed Deployer for OSHI experiments 
 
-Using this tool you can "literally" program your Testbed
-configuration file. 
+Using this tool you can it is possible to produce the Testbed configuration file to be used by the Management Scripts.
+
+This a result of the [DREAMER project](http://netgroup.uniroma2.it/DREAMER/).  
+Addtional documentation is available at http://netgroup.uniroma2.it/OSHI/ .
 
 License
 =======
