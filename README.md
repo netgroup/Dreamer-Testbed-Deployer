@@ -5,7 +5,7 @@ Dreamer-Testbed-Deployer
 
 Testbed Deployer for OSHI experiments 
 
-Using this tool you can it is possible to produce the testbed configuration files to be used by the Management Scripts.
+Using this tool it is possible to produce the testbed configuration files to be used by the Management Scripts.
 
 This a result of the [DREAMER project](http://netgroup.uniroma2.it/DREAMER/).  
 Addtional documentation is available at http://netgroup.uniroma2.it/OSHI/ .
