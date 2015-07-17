@@ -30,6 +30,6 @@ Testbed Deployer Dependencies
 
 2) ipaddress (pip)
 
-3) [Dreamer-Topology-Parser-and-Validator](https://github.com/netgroup/Dreamer-Topology-Parser-and-Validator) (git)
+3) [Dreamer-Topology-Parser](https://github.com/netgroup/Dreamer-Topology-Parser-and-Validator) (git)
 
 
